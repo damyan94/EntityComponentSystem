@@ -30,7 +30,7 @@ int32_t main(int32_t argC, char** argV)
 		// Create 500 entities, assign and change components on random
 		std::vector<Entity> entities;
 		entities.resize(500);
-		created = entities.size();
+		created = (int32_t)entities.size();
 
 		for (auto& entity : entities)
 		{

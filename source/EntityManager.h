@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <unordered_map>
 
 #include "Defines.h"
@@ -46,7 +47,8 @@ private:
 template<typename T>
 inline ComponentId EntityManager::AddComponent()
 {
-	//AssertReturnIf(!std::is_base_of(IComponent, T)::value, INVALID_COMPONENT_ID);
+	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), INVALID_COMPONENT_ID);
+
 	return AddComponent(T::Type);
 }
 
@@ -54,7 +56,8 @@ inline ComponentId EntityManager::AddComponent()
 template<typename T>
 inline void EntityManager::RemoveComponent(ComponentId index)
 {
-	//AssertReturnIf(!std::is_base_of(IComponent, T)::value);
+	AssertReturnIf(!(std::is_base_of<IComponent, T>::value));
+
 	RemoveComponent(T::Type, index);
 }
 
@@ -62,7 +65,8 @@ inline void EntityManager::RemoveComponent(ComponentId index)
 template<typename T>
 inline void EntityManager::ResetComponent(ComponentId index)
 {
-	//AssertReturnIf(!std::is_base_of(IComponent, T)::value);
+	AssertReturnIf(!(std::is_base_of<IComponent, T>::value));
+
 	ResetComponent(T::Type, index);
 }
 
@@ -70,6 +74,7 @@ inline void EntityManager::ResetComponent(ComponentId index)
 template<typename T>
 inline T* EntityManager::GetComponent(ComponentId index) const
 {
-	//AssertReturnIf(!std::is_base_of(IComponent, T)::value, nullptr);
+	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), nullptr);
+
 	return (T*)GetComponent(T::Type, index);
 }
