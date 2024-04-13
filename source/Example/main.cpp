@@ -6,6 +6,7 @@
 #include "Entity.h"
 
 #include "Utils/Random.h"
+#include "ComponentDataManager.h"
 #include "Components/Transform.h"
 #include "Components/Image.h"
 #include "Components/Text.h"
@@ -15,8 +16,8 @@ int32_t main(int32_t argC, char** argV)
 {
 	srand((uint32_t)time(nullptr));
 
-	// Run test 1000 times
-	for (int32_t j = 0; j < 1000; j++)
+	// Run test 10 times
+	for (int32_t j = 0; j < 10; j++)
 	{
 		int32_t created = 0;
 		int32_t destroyed = 0;
@@ -25,11 +26,10 @@ int32_t main(int32_t argC, char** argV)
 		int32_t componentsRemoved = 0;
 
 		std::chrono::system_clock clock;
-		auto start = clock.now();
 
-		// Create 500 entities, assign and change components on random
+		// Create 5000 entities, assign and change components on random
 		std::vector<Entity> entities;
-		entities.resize(500);
+		entities.resize(5000);
 		created = (int32_t)entities.size();
 
 		for (auto& entity : entities)
@@ -96,6 +96,27 @@ int32_t main(int32_t argC, char** argV)
 				componentsRemoved++;
 			}
 		}
+
+		// Iterate through all components of a type
+		auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
+
+		auto start = clock.now();
+		for (auto& transform : transforms)
+		{
+			transform.SetPosition({ 1, 1, 1 });
+		}
+
+		// Compared to unordered_map, the vector is 3-4 times faster
+		/*std::unordered_map<int32_t, Transform> unordered;
+		for (int32_t k = 0; k < 5000; k++)
+		{
+			unordered[k] = Transform();
+		}
+
+		for (auto& [_, transform] : unordered)
+		{
+			transform.SetPosition({ 1, 1, 1 });
+		}*/
 
 		auto finish = clock.now();
 

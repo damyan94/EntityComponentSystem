@@ -1,9 +1,9 @@
 #pragma once
 
+#include <type_traits>
 #include <unordered_map>
 
 #include "Defines.h"
-#include "EntityManager.h"
 #include "Components/ComponentType.h"
 #include "Components/IComponent.h"
 
@@ -28,7 +28,6 @@ public:
 
 private:
 	void				RemoveAllComponents();
-	template <typename T> ComponentId	GetComponentId() const;
 
 private:
 	std::unordered_map<EComponentType, ComponentId> m_Components;
@@ -38,51 +37,43 @@ private:
 template<typename T>
 inline T* Entity::AddComponent()
 {
-	ReturnIf(HasComponent<T>(), nullptr);
+	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), nullptr);
 
-	m_Components[T::Type] = EntityManager::Instance().AddComponent<T>();
-
-	return GetComponent<T>();
+	return (T*)AddComponent(T::Type);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<typename T>
 inline void Entity::RemoveComponent()
 {
-	ReturnIf(!HasComponent<T>());
+	AssertReturnIf(!(std::is_base_of<IComponent, T>::value));
 
-	EntityManager::Instance().RemoveComponent<T>(GetComponentId<T>());
-	m_Components.erase(T::Type);
+	RemoveComponent(T::Type);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<typename T>
 inline void Entity::ResetComponent()
 {
-	ReturnIf(!HasComponent<T>());
+	AssertReturnIf(!(std::is_base_of<IComponent, T>::value));
 
-	EntityManager::Instance().ResetComponent<T>(GetComponentId<T>());
+	ResetComponent(T::Type);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<typename T>
 inline bool Entity::HasComponent() const
 {
-	return m_Components.contains(T::Type);
+	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), false);
+
+	return HasComponent(T::Type);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 template<typename T>
 inline T* Entity::GetComponent() const
 {
-	ReturnIf(!HasComponent<T>(), nullptr);
+	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), nullptr);
 
-	return EntityManager::Instance().GetComponent<T>(GetComponentId<T>());
-}
-
-////////////////////////////////////////////////////////////////////////////////
-template<typename T>
-inline ComponentId Entity::GetComponentId() const
-{
-	return m_Components.find(T::Type)->second;
+	return (T*)GetComponent(T::Type);
 }

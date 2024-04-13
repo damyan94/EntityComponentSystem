@@ -1,4 +1,4 @@
-#include "EntityManager.h"
+#include "ComponentDataManager.h"
 
 #include "ComponentDataContainer.h"
 
@@ -8,35 +8,35 @@
 #include "Components/Action.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-EntityManager::EntityManager()
+ComponentDataManager::ComponentDataManager()
 {
 	Init();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-EntityManager::~EntityManager()
+ComponentDataManager::~ComponentDataManager()
 {
 	Deinit();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-EntityManager& EntityManager::Instance()
+ComponentDataManager& ComponentDataManager::Instance()
 {
-	static EntityManager m_Instance;
+	static ComponentDataManager m_Instance;
 	return m_Instance;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool EntityManager::Init()
+bool ComponentDataManager::Init()
 {
 	m_ComponentDataContainers.reserve((size_t)EComponentType::Count);
 
-#define INIT_COMPONENT_SYSTEM(Type) m_ComponentDataContainers[EComponentType::Type] = new ComponentDataContainer<Type>
+#define INIT_COMPONENT_DATA_CONTAINER(Type) m_ComponentDataContainers[EComponentType::Type] = new ComponentDataContainer<Type>
 
-	INIT_COMPONENT_SYSTEM(Transform);
-	INIT_COMPONENT_SYSTEM(Image);
-	INIT_COMPONENT_SYSTEM(Text);
-	INIT_COMPONENT_SYSTEM(Action);
+	INIT_COMPONENT_DATA_CONTAINER(Transform);
+	INIT_COMPONENT_DATA_CONTAINER(Image);
+	INIT_COMPONENT_DATA_CONTAINER(Text);
+	INIT_COMPONENT_DATA_CONTAINER(Action);
 
 #undef INIT_COMPONENT_SYSTEM
 
@@ -44,7 +44,7 @@ bool EntityManager::Init()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void EntityManager::Deinit()
+void ComponentDataManager::Deinit()
 {
 	for (auto& [_, componentSystem] : m_ComponentDataContainers)
 	{
@@ -55,25 +55,25 @@ void EntityManager::Deinit()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ComponentId EntityManager::AddComponent(EComponentType type)
+ComponentId ComponentDataManager::AddComponent(EComponentType type)
 {
 	return m_ComponentDataContainers[type]->Add();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void EntityManager::RemoveComponent(EComponentType type, ComponentId index)
+void ComponentDataManager::RemoveComponent(EComponentType type, ComponentId index)
 {
 	m_ComponentDataContainers[type]->Remove(index);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void EntityManager::ResetComponent(EComponentType type, ComponentId index)
+void ComponentDataManager::ResetComponent(EComponentType type, ComponentId index)
 {
 	m_ComponentDataContainers[type]->Reset(index);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-IComponent* EntityManager::GetComponent(EComponentType type, ComponentId index) const
+IComponent* ComponentDataManager::GetComponent(EComponentType type, ComponentId index) const
 {
 	return m_ComponentDataContainers.find(type)->second->Get(index);
 }

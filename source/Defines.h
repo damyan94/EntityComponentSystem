@@ -6,8 +6,7 @@
 typedef void(*VoidFunction)();
 typedef int32_t ComponentId;
 
-#define MAX_ENTITIES						1000
-#define MAX_COMPONENTS						1000
+#define MAX_ENTITIES						10000
 #define INITIAL_ENTITIES					100
 #define INVALID_COMPONENT_ID				-1
 

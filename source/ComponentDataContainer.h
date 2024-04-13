@@ -11,16 +11,19 @@ template <typename T>
 class ComponentDataContainer
 	: public IComponentDataContainer
 {
-public:
+	friend class ComponentDataManager;
+
+private:
 	ComponentId			Add() final;
 	void				Remove(ComponentId index) final;
 	void				Reset(ComponentId index) final;
 	T*					Get(ComponentId index) final;
+	size_t				Count() const final;
 
-	size_t				Count() const;
+	std::vector<T>&		GetAll();
 
 private:
-	bool				DoesIndexExist(ComponentId index);
+	bool				DoesIndexExist(ComponentId index) const;
 	bool				CanAdd() const;
 	ComponentId			AddInternal(const T& newData);
 
@@ -84,8 +87,15 @@ inline size_t ComponentDataContainer<T>::Count() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+template<typename T>
+inline std::vector<T>& ComponentDataContainer<T>::GetAll()
+{
+	return m_ComponentsData;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-inline bool ComponentDataContainer<T>::DoesIndexExist(ComponentId index)
+inline bool ComponentDataContainer<T>::DoesIndexExist(ComponentId index) const
 {
 	return index >= 0 && index < (ComponentId)m_ComponentsData.size();
 }

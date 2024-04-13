@@ -1,5 +1,6 @@
 #include "Entity.h"
 
+#include "ComponentDataManager.h"
 #include "Components/Transform.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -19,7 +20,7 @@ IComponent* Entity::AddComponent(EComponentType type)
 {
     ReturnIf(HasComponent(type), nullptr);
 
-    m_Components[type] = EntityManager::Instance().AddComponent(type);
+    m_Components[type] = ComponentDataManager::Instance().AddComponent(type);
 
     return GetComponent(type);
 }
@@ -27,9 +28,9 @@ IComponent* Entity::AddComponent(EComponentType type)
 ////////////////////////////////////////////////////////////////////////////////
 void Entity::RemoveComponent(EComponentType type)
 {
-    ReturnIf(!HasComponent(type));
+    ReturnIf(!HasComponent(type) || EComponentType::Transform == type);
 
-    EntityManager::Instance().RemoveComponent(type, m_Components[type]);
+    ComponentDataManager::Instance().RemoveComponent(type, m_Components[type]);
     m_Components.erase(type);
 }
 
@@ -38,7 +39,7 @@ void Entity::ResetComponent(EComponentType type)
 {
     ReturnIf(!HasComponent(type));
 
-    EntityManager::Instance().ResetComponent(type, m_Components[type]);
+    ComponentDataManager::Instance().ResetComponent(type, m_Components[type]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -52,7 +53,7 @@ IComponent* Entity::GetComponent(EComponentType type) const
 {
     ReturnIf(!HasComponent(type), nullptr);
 
-    return EntityManager::Instance().GetComponent(type, m_Components.find(type)->second);
+    return ComponentDataManager::Instance().GetComponent(type, m_Components.find(type)->second);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +63,7 @@ void Entity::RemoveAllComponents()
     {
         ContinueIf(!HasComponent(type));
 
-        EntityManager::Instance().RemoveComponent(type, m_Components[type]);
+        ComponentDataManager::Instance().RemoveComponent(type, m_Components[type]);
     }
 
     m_Components.clear();
