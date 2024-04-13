@@ -8,14 +8,12 @@
 class Text
 	: public IComponent
 {
-public:
-	static constexpr EComponentType Type = EComponentType::Text;
+	DECLARE_COMPONENT(Text);
 
 public:
 	Text();
 	~Text();
 
-	constexpr EComponentType GetType() const final;
 	void				Reset() final;
 
 	void				SetText(const std::string& text);

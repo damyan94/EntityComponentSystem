@@ -8,14 +8,12 @@
 class Image
 	: public IComponent
 {
-public:
-	static constexpr EComponentType Type = EComponentType::Image;
+	DECLARE_COMPONENT(Image);
 
 public:
 	Image();
 	~Image();
 
-	constexpr EComponentType GetType() const final;
 	void Reset() final;
 
 private:

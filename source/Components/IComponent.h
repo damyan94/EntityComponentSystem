@@ -3,7 +3,14 @@
 #include "Defines.h"
 #include "ComponentType.h"
 
+#define DECLARE_COMPONENT(ComponentType)										\
+public:																			\
+	static constexpr EComponentType Type = EComponentType::ComponentType;		\
+	inline constexpr EComponentType GetType() const final { return Type; }
+
 ////////////////////////////////////////////////////////////////////////////////
+// @brief When adding a new component class, you can use the DECLARE_COMPONENT
+// macro with the new type name for convenience
 class IComponent
 {
 public:

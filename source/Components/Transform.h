@@ -8,8 +8,7 @@
 class Transform
 	: public IComponent
 {
-public:
-	static constexpr EComponentType Type = EComponentType::Transform;
+	DECLARE_COMPONENT(Transform);
 
 public:
 	struct Position
@@ -37,7 +36,6 @@ public:
 	Transform();
 	~Transform();
 
-	constexpr EComponentType GetType() const final;
 	void				Reset() final;
 
 	void				SetPosition(Position position);
