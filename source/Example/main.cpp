@@ -27,6 +27,7 @@ int32_t main(int32_t argC, char** argV)
 
 		std::chrono::system_clock clock;
 
+		//TODO What holds the entities should be game specific
 		// Create 5000 entities, assign and change components on random
 		std::vector<Entity> entities;
 		entities.resize(5000);
@@ -98,14 +99,30 @@ int32_t main(int32_t argC, char** argV)
 		}
 
 		// Iterate through all components of a type
-		auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
-
 		auto start = clock.now();
-		for (auto& transform : transforms)
+		auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
+		for (auto& item : transforms)
 		{
-			transform.SetPosition({ 1, 1, 1 });
+			item.SetPosition({ 1, 1, 1 });
 		}
 
+		auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
+		for (auto& item : images)
+		{
+			item.GetType();
+		}
+
+		auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
+		for (auto& item : texts)
+		{
+			item.SetText("Hi");
+		}
+
+		auto& actions = ComponentDataManager::Instance().GetAllComponents<Action>();
+		for (auto& item : actions)
+		{
+			item.Execute();
+		}
 		// Compared to unordered_map, the vector is 3-4 times faster
 		/*std::unordered_map<int32_t, Transform> unordered;
 		for (int32_t k = 0; k < 5000; k++)

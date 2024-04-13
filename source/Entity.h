@@ -34,7 +34,7 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline T* Entity::AddComponent()
 {
 	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), nullptr);
@@ -43,7 +43,7 @@ inline T* Entity::AddComponent()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline void Entity::RemoveComponent()
 {
 	AssertReturnIf(!(std::is_base_of<IComponent, T>::value));
@@ -52,7 +52,7 @@ inline void Entity::RemoveComponent()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline void Entity::ResetComponent()
 {
 	AssertReturnIf(!(std::is_base_of<IComponent, T>::value));
@@ -61,7 +61,7 @@ inline void Entity::ResetComponent()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline bool Entity::HasComponent() const
 {
 	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), false);
@@ -70,7 +70,7 @@ inline bool Entity::HasComponent() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline T* Entity::GetComponent() const
 {
 	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), nullptr);

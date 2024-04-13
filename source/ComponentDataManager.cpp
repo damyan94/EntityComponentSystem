@@ -38,7 +38,7 @@ bool ComponentDataManager::Init()
 	INIT_COMPONENT_DATA_CONTAINER(Text);
 	INIT_COMPONENT_DATA_CONTAINER(Action);
 
-#undef INIT_COMPONENT_SYSTEM
+#undef INIT_COMPONENT_DATA_CONTAINER
 
 	return true;
 }
@@ -55,25 +55,25 @@ void ComponentDataManager::Deinit()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ComponentId ComponentDataManager::AddComponent(EComponentType type)
+ComponentId ComponentDataManager::Add(EComponentType type)
 {
 	return m_ComponentDataContainers[type]->Add();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ComponentDataManager::RemoveComponent(EComponentType type, ComponentId index)
+void ComponentDataManager::Remove(EComponentType type, ComponentId index)
 {
 	m_ComponentDataContainers[type]->Remove(index);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void ComponentDataManager::ResetComponent(EComponentType type, ComponentId index)
+void ComponentDataManager::Reset(EComponentType type, ComponentId index)
 {
 	m_ComponentDataContainers[type]->Reset(index);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-IComponent* ComponentDataManager::GetComponent(EComponentType type, ComponentId index) const
+IComponent* ComponentDataManager::Get(EComponentType type, ComponentId index) const
 {
 	return m_ComponentDataContainers.find(type)->second->Get(index);
 }

@@ -31,10 +31,10 @@ private:
 	bool				Init();
 	void				Deinit();
 
-	ComponentId			AddComponent(EComponentType type);
-	void				RemoveComponent(EComponentType type, ComponentId index);
-	void				ResetComponent(EComponentType type, ComponentId index);
-	IComponent*			GetComponent(EComponentType type, ComponentId index) const;
+	ComponentId			Add(EComponentType type);
+	void				Remove(EComponentType type, ComponentId index);
+	void				Reset(EComponentType type, ComponentId index);
+	IComponent*			Get(EComponentType type, ComponentId index) const;
 
 private:
 	std::unordered_map<EComponentType, IComponentDataContainer*> m_ComponentDataContainers;

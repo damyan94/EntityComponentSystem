@@ -8,7 +8,7 @@
 class Transform
 	: public IComponent
 {
-	DECLARE_COMPONENT(Transform);
+	SET_COMPONENT_TYPE(Transform);
 
 public:
 	struct Position

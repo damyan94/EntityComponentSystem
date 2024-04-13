@@ -20,7 +20,7 @@ IComponent* Entity::AddComponent(EComponentType type)
 {
     ReturnIf(HasComponent(type), nullptr);
 
-    m_Components[type] = ComponentDataManager::Instance().AddComponent(type);
+    m_Components[type] = ComponentDataManager::Instance().Add(type);
 
     return GetComponent(type);
 }
@@ -30,7 +30,7 @@ void Entity::RemoveComponent(EComponentType type)
 {
     ReturnIf(!HasComponent(type) || EComponentType::Transform == type);
 
-    ComponentDataManager::Instance().RemoveComponent(type, m_Components[type]);
+    ComponentDataManager::Instance().Remove(type, m_Components[type]);
     m_Components.erase(type);
 }
 
@@ -39,7 +39,7 @@ void Entity::ResetComponent(EComponentType type)
 {
     ReturnIf(!HasComponent(type));
 
-    ComponentDataManager::Instance().ResetComponent(type, m_Components[type]);
+    ComponentDataManager::Instance().Reset(type, m_Components[type]);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ IComponent* Entity::GetComponent(EComponentType type) const
 {
     ReturnIf(!HasComponent(type), nullptr);
 
-    return ComponentDataManager::Instance().GetComponent(type, m_Components.find(type)->second);
+    return ComponentDataManager::Instance().Get(type, m_Components.find(type)->second);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ void Entity::RemoveAllComponents()
     {
         ContinueIf(!HasComponent(type));
 
-        ComponentDataManager::Instance().RemoveComponent(type, m_Components[type]);
+        ComponentDataManager::Instance().Remove(type, m_Components[type]);
     }
 
     m_Components.clear();

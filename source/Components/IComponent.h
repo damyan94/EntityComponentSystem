@@ -3,7 +3,7 @@
 #include "Defines.h"
 #include "ComponentType.h"
 
-#define DECLARE_COMPONENT(ComponentType)										\
+#define SET_COMPONENT_TYPE(ComponentType)										\
 public:																			\
 	static constexpr EComponentType Type = EComponentType::ComponentType;		\
 	inline constexpr EComponentType GetType() const final { return Type; }

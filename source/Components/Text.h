@@ -8,7 +8,7 @@
 class Text
 	: public IComponent
 {
-	DECLARE_COMPONENT(Text);
+	SET_COMPONENT_TYPE(Text);
 
 public:
 	Text();
@@ -17,6 +17,7 @@ public:
 	void				Reset() final;
 
 	void				SetText(const std::string& text);
+	void				SetText(std::string&& text);
 	const std::string&	GetText() const;
 
 private:

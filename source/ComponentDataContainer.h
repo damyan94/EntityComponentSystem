@@ -87,7 +87,7 @@ inline size_t ComponentDataContainer<T>::Count() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template<typename T>
+template <typename T>
 inline std::vector<T>& ComponentDataContainer<T>::GetAll()
 {
 	return m_ComponentsData;

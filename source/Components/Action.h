@@ -8,7 +8,7 @@
 class Action
 	: public IComponent
 {
-	DECLARE_COMPONENT(Action);
+	SET_COMPONENT_TYPE(Action);
 
 public:
 	Action();

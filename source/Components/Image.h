@@ -8,7 +8,7 @@
 class Image
 	: public IComponent
 {
-	DECLARE_COMPONENT(Image);
+	SET_COMPONENT_TYPE(Image);
 
 public:
 	Image();
