@@ -14,6 +14,9 @@ public:																			\
 class IComponent
 {
 public:
+	IComponent() = default;
+	virtual ~IComponent() = default;
+
 	virtual constexpr EComponentType GetType() const = 0;
 	virtual void Reset() = 0;
 };

@@ -31,7 +31,8 @@ bool ComponentDataManager::Init()
 {
 	m_ComponentDataContainers.reserve((size_t)EComponentType::Count);
 
-#define INIT_COMPONENT_DATA_CONTAINER(Type) m_ComponentDataContainers[EComponentType::Type] = new ComponentDataContainer<Type>
+	// Do the initialization in the order of declaring the types in the enum class.
+#define INIT_COMPONENT_DATA_CONTAINER(Type) m_ComponentDataContainers.emplace_back(new ComponentDataContainer<Type>)
 
 	INIT_COMPONENT_DATA_CONTAINER(Transform);
 	INIT_COMPONENT_DATA_CONTAINER(Image);
@@ -46,7 +47,7 @@ bool ComponentDataManager::Init()
 ////////////////////////////////////////////////////////////////////////////////
 void ComponentDataManager::Deinit()
 {
-	for (auto& [_, componentSystem] : m_ComponentDataContainers)
+	for (auto& componentSystem : m_ComponentDataContainers)
 	{
 		SafeDelete(componentSystem);
 	}
@@ -57,23 +58,23 @@ void ComponentDataManager::Deinit()
 ////////////////////////////////////////////////////////////////////////////////
 ComponentId ComponentDataManager::Add(EComponentType type)
 {
-	return m_ComponentDataContainers[type]->Add();
+	return m_ComponentDataContainers[(int32_t)type]->Add();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void ComponentDataManager::Remove(EComponentType type, ComponentId index)
 {
-	m_ComponentDataContainers[type]->Remove(index);
+	m_ComponentDataContainers[(int32_t)type]->Remove(index);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void ComponentDataManager::Reset(EComponentType type, ComponentId index)
 {
-	m_ComponentDataContainers[type]->Reset(index);
+	m_ComponentDataContainers[(int32_t)type]->Reset(index);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 IComponent* ComponentDataManager::Get(EComponentType type, ComponentId index) const
 {
-	return m_ComponentDataContainers.find(type)->second->Get(index);
+	return m_ComponentDataContainers[(int32_t)type]->Get(index);
 }

@@ -70,6 +70,7 @@ inline bool Entity::HasComponent() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// @brief Do not store permanently because if the vector resizes, it may be invalid
 template <typename T>
 inline T* Entity::GetComponent() const
 {

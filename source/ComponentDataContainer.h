@@ -14,6 +14,9 @@ class ComponentDataContainer
 	friend class ComponentDataManager;
 
 private:
+	ComponentDataContainer();
+	~ComponentDataContainer();
+
 	ComponentId			Add() final;
 	void				Remove(ComponentId index) final;
 	void				Reset(ComponentId index) final;
@@ -25,7 +28,7 @@ private:
 private:
 	bool				DoesIndexExist(ComponentId index) const;
 	bool				CanAdd() const;
-	ComponentId			AddInternal(const T& newData);
+	ComponentId			AddInternal();
 
 	bool				HasFreeSlot() const;
 	void				EmplaceFreeSlot(ComponentId index);
@@ -37,6 +40,19 @@ private:
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+template<typename T>
+inline ComponentDataContainer<T>::ComponentDataContainer()
+{
+	m_ComponentsData.reserve(MAX_ENTITIES / 10);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template<typename T>
+inline ComponentDataContainer<T>::~ComponentDataContainer()
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
 template <typename T>
 inline ComponentId ComponentDataContainer<T>::Add()
 {
@@ -45,7 +61,7 @@ inline ComponentId ComponentDataContainer<T>::Add()
 	ComponentId index = PopFreeSlot();
 	if (INVALID_COMPONENT_ID == index)
 	{
-		index = AddInternal(T());
+		index = AddInternal();
 	}
 
 	return index;
@@ -71,6 +87,8 @@ inline void ComponentDataContainer<T>::Reset(ComponentId index)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// @brief Do not store permanently pointers to elements of the vector since they
+// could be invalid after vector resizing. Prefer to use this locally.
 template <typename T>
 inline T* ComponentDataContainer<T>::Get(ComponentId index)
 {
@@ -109,9 +127,10 @@ inline bool ComponentDataContainer<T>::CanAdd() const
 
 ////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-inline ComponentId ComponentDataContainer<T>::AddInternal(const T& newData)
+inline ComponentId ComponentDataContainer<T>::AddInternal()
 {
-	m_ComponentsData.emplace_back(newData);
+	static T empty;
+	m_ComponentsData.emplace_back(empty);
 
 	return (ComponentId)(m_ComponentsData.size() - 1);
 }

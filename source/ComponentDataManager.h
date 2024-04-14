@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <vector>
 
 #include "Defines.h"
 #include "ComponentDataContainer.h"
@@ -37,7 +37,7 @@ private:
 	IComponent*			Get(EComponentType type, ComponentId index) const;
 
 private:
-	std::unordered_map<EComponentType, IComponentDataContainer*> m_ComponentDataContainers;
+	std::vector<IComponentDataContainer*> m_ComponentDataContainers;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,5 +47,5 @@ inline std::vector<T>& ComponentDataManager::GetAllComponents() const
 	static auto empty = std::vector<T>();
 	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), empty);
 
-	return ((ComponentDataContainer<T>*)(m_ComponentDataContainers.find(T::Type)->second))->GetAll();
+	return ((ComponentDataContainer<T>*)(m_ComponentDataContainers[(int32_t)T::Type]))->GetAll();
 }

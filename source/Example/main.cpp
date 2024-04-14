@@ -115,7 +115,10 @@ int32_t main(int32_t argC, char** argV)
 		auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
 		for (auto& item : texts)
 		{
-			item.SetText("Hi");
+			if (Utils::Probability(30))
+			{
+				item.SetText("Hi");
+			}
 		}
 
 		auto& actions = ComponentDataManager::Instance().GetAllComponents<Action>();

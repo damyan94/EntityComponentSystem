@@ -49,6 +49,7 @@ bool Entity::HasComponent(EComponentType type) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// @brief Do not store permanently because if the vector resizes, it may be invalid
 IComponent* Entity::GetComponent(EComponentType type) const
 {
     ReturnIf(!HasComponent(type), nullptr);

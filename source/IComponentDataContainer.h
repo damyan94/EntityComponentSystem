@@ -1,7 +1,5 @@
 #pragma once
 
-#include <vector>
-
 #include "Defines.h"
 
 class IComponent;
@@ -10,6 +8,9 @@ class IComponent;
 class IComponentDataContainer
 {
 public:
+	IComponentDataContainer() = default;
+	virtual ~IComponentDataContainer() = default;
+
 	virtual ComponentId			Add() = 0;
 	virtual void				Remove(ComponentId index) = 0;
 	virtual void				Reset(ComponentId index) = 0;
