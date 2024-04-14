@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <vector>
 
 #include "Defines.h"
@@ -11,7 +12,7 @@ class IComponent;
 ////////////////////////////////////////////////////////////////////////////////
 class ComponentDataManager
 {
-	friend class Entity;
+	friend class ComponentDataManagerEntityProxy;
 
 private:
 	ComponentDataManager();
@@ -24,7 +25,6 @@ private:
 
 public:
 	static ComponentDataManager& Instance();
-	//TODO Maybe move this to a new class, since the idea of this is to be used by the systems
 	template <typename T> std::vector<T>& GetAllComponents() const;
 
 private:

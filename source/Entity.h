@@ -17,14 +17,14 @@ public:
 	IComponent*			AddComponent(EComponentType type);
 	void				RemoveComponent(EComponentType type);
 	void				ResetComponent(EComponentType type);
-	bool				HasComponent(EComponentType type) const;
 	IComponent*			GetComponent(EComponentType type) const;
+	bool				HasComponent(EComponentType type) const;
 
 	template <typename T> T*			AddComponent();
 	template <typename T> void			RemoveComponent();
 	template <typename T> void			ResetComponent();
-	template <typename T> bool			HasComponent() const;
 	template <typename T> T*			GetComponent() const;
+	template <typename T> bool			HasComponent() const;
 
 private:
 	void				RemoveAllComponents();
@@ -61,15 +61,6 @@ inline void Entity::ResetComponent()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-template <typename T>
-inline bool Entity::HasComponent() const
-{
-	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), false);
-
-	return HasComponent(T::Type);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // @brief Do not store permanently because if the vector resizes, it may be invalid
 template <typename T>
 inline T* Entity::GetComponent() const
@@ -77,4 +68,13 @@ inline T* Entity::GetComponent() const
 	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), nullptr);
 
 	return (T*)GetComponent(T::Type);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+template <typename T>
+inline bool Entity::HasComponent() const
+{
+	AssertReturnIf(!(std::is_base_of<IComponent, T>::value), false);
+
+	return HasComponent(T::Type);
 }
