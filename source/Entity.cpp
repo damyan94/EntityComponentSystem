@@ -28,7 +28,8 @@ IComponent* Entity::AddComponent(EComponentType type)
 ////////////////////////////////////////////////////////////////////////////////
 void Entity::RemoveComponent(EComponentType type)
 {
-    ReturnIf(!HasComponent(type) || EComponentType::Transform == type);
+    AssertReturnIf(EComponentType::Transform == type);
+    ReturnIf(!HasComponent(type));
 
     ComponentDataManagerEntityProxy::Remove(type, m_Components[type]);
     m_Components.erase(type);

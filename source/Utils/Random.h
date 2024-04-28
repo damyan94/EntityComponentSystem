@@ -9,14 +9,15 @@ namespace Utils
 template <typename T>
 inline T Random(T min, T max)
 {
-	double randPercent = (double)(rand() % 10001) / 10000;
-	return (T)(randPercent * (max - min)) - min;
+	T random = (T)(rand() % 10001);
+	T range = max - min;
+	return min + (random * range) / 10000;
 }
 
 // @brief Generate true with a given probability 
 // @param probability: A decimal number between 0 and 100%
 inline bool Probability(float probability)
 {
-	return (float)(Random(0, 100)) <= probability;
+	return Random(0.0f, 100.0f) <= probability;
 }
 } // !namespace Utils
