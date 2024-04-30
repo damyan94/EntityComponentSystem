@@ -1,10 +1,7 @@
 #include "Example/EntityTest.h"
 
-#include <cstdint>
-#include <vector>
 #include <chrono>
 
-#include "Defines.h"
 #include "Utils/Random.h"
 #include "ComponentDataManager.h"
 #include "Components/Transform.h"
@@ -15,6 +12,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 void EntityTest::Run(int32_t runs)
 {
+	Log("Running EntityTest...");
+
 	std::chrono::system_clock clock;
 
 	for (int32_t j = 0; j < runs; j++)
@@ -33,6 +32,8 @@ void EntityTest::Run(int32_t runs)
 
 		m_TestStatistics.Display((int32_t)std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count());
 	}
+
+	Log("Finished running EntityTest.\n");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,6 +125,7 @@ void EntityTest::IterateComponents()
 	for (auto& item : transforms)
 	{
 		item.SetPosition({ 1, 1, 1 });
+		m_TestStatistics.ComponentsChanged++;
 	}
 
 	auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
@@ -138,6 +140,7 @@ void EntityTest::IterateComponents()
 		if (Utils::Probability(30))
 		{
 			item.SetText("Hi");
+			m_TestStatistics.ComponentsChanged++;
 		}
 	}
 

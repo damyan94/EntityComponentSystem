@@ -1,10 +1,7 @@
 #include "Example/GameObjectTest.h"
 
-#include <cstdint>
-#include <vector>
 #include <chrono>
 
-#include "Defines.h"
 #include "Utils/Random.h"
 #include "ComponentDataManager.h"
 #include "Components/Transform.h"
@@ -16,6 +13,8 @@
 void GameObjectTest::Run(int32_t runs)
 {
 	std::chrono::system_clock clock;
+
+	Log("Running GameObjectTest...");
 
 	for (int32_t j = 0; j < runs; j++)
 	{
@@ -33,6 +32,8 @@ void GameObjectTest::Run(int32_t runs)
 
 		m_TestStatistics.Display((int32_t)std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count());
 	}
+
+	Log("Finished running GameObjectTest.\n");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -147,6 +148,7 @@ void GameObjectTest::IterateComponents()
 	for (auto& item : transforms)
 	{
 		item.SetPosition({ 1, 1, 1 });
+		m_TestStatistics.ComponentsChanged++;
 	}
 
 	auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
@@ -161,6 +163,7 @@ void GameObjectTest::IterateComponents()
 		if (Utils::Probability(30))
 		{
 			item.SetText("Hi");
+			m_TestStatistics.ComponentsChanged++;
 		}
 	}
 

@@ -2,10 +2,9 @@
 
 #include <vector>
 
-#include "Example/ITest.h"
-
 #include "Defines.h"
 #include "GameObject.h"
+#include "Example/ITest.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 class GameObjectTest

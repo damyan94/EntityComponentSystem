@@ -26,4 +26,4 @@ void Assert(const std::string& text)
 	}
 #endif // !(WIN32 || _WIN32)
 }
-}; // !namespace Utils
+} // !namespace Utils
