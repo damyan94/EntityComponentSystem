@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <vector>
 #include <unordered_map>
 
 #include "Defines.h"
@@ -26,11 +27,14 @@ public:
 	template <typename T> T*			GetComponent() const;
 	template <typename T> bool			HasComponent() const;
 
+	ComponentId			GetComponentId(EComponentType type) const;
 private:
 	void				RemoveAllComponents();
+	//int32_t				GetIndex(EComponentType type) const;
 
 private:
-	std::unordered_map<EComponentType, ComponentId> m_Components;
+	//std::unordered_map<EComponentType, ComponentId> m_Components;
+	std::vector<ComponentId> m_Components;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -3,6 +3,7 @@
 #include <vector>
 #include <deque>
 
+class Entity;
 #include "Defines.h"
 #include "IComponentDataContainer.h"
 
@@ -17,7 +18,7 @@ private:
 	ComponentDataContainer();
 	~ComponentDataContainer();
 
-	ComponentId			Add() final;
+	ComponentId			Add(Entity* parent) final;
 	void				Remove(ComponentId index) final;
 	void				Reset(ComponentId index) final;
 	T*					Get(ComponentId index) final;
@@ -54,7 +55,7 @@ inline ComponentDataContainer<T>::~ComponentDataContainer()
 
 ////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-inline ComponentId ComponentDataContainer<T>::Add()
+inline ComponentId ComponentDataContainer<T>::Add(Entity* parent)
 {
 	AssertReturnIf(!(CanAdd() || HasFreeSlot()), INVALID_COMPONENT_ID);
 
@@ -63,6 +64,8 @@ inline ComponentId ComponentDataContainer<T>::Add()
 	{
 		index = AddInternal();
 	}
+
+	m_ComponentsData[index].Parent = parent;
 
 	return index;
 }

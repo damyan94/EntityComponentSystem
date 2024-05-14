@@ -67,7 +67,7 @@ GameObject* GameObject::GetChild(int32_t index) const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-GameObjectVector GameObject::GetAllChildren() const
+const GameObjectVector& GameObject::GetAllChildren() const
 {
 	return m_Children;
 }

@@ -3,6 +3,8 @@
 #include "Defines.h"
 #include "ComponentType.h"
 
+class Entity;
+
 #define SET_COMPONENT_TYPE(ComponentType)										\
 public:																			\
 	static constexpr EComponentType Type = EComponentType::ComponentType;		\
@@ -19,4 +21,6 @@ public:
 
 	virtual constexpr EComponentType GetType() const = 0;
 	virtual void Reset() = 0;
+
+	Entity* Parent = nullptr;
 };

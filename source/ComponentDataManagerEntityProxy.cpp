@@ -3,9 +3,9 @@
 #include "ComponentDataManager.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-ComponentId ComponentDataManagerEntityProxy::Add(EComponentType type)
+ComponentId ComponentDataManagerEntityProxy::Add(EComponentType type, Entity* parent)
 {
-	return ComponentDataManager::Instance().Add(type);
+	return ComponentDataManager::Instance().Add(type, parent);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

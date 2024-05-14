@@ -56,9 +56,9 @@ void ComponentDataManager::Deinit()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-ComponentId ComponentDataManager::Add(EComponentType type)
+ComponentId ComponentDataManager::Add(EComponentType type, Entity* parent)
 {
-	return m_ComponentDataContainers[(int32_t)type]->Add();
+	return m_ComponentDataContainers[(int32_t)type]->Add(parent);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

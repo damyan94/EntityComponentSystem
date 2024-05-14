@@ -24,7 +24,7 @@ public:
 	void				RemoveAllChildren();
 
 	GameObject*			GetChild(int32_t index) const;
-	GameObjectVector	GetAllChildren() const;
+	const GameObjectVector&	GetAllChildren() const;
 
 	void				SetParent(GameObject* parent);
 	GameObject*			GetParent() const;

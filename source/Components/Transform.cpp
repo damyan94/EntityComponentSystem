@@ -16,6 +16,7 @@ void Transform::Reset()
 	m_Position = Position{};
 	m_Rotation = Rotation{};
 	m_Scale = Scale{};
+	Parent = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

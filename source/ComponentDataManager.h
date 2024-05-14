@@ -31,7 +31,7 @@ private:
 	bool				Init();
 	void				Deinit();
 
-	ComponentId			Add(EComponentType type);
+	ComponentId			Add(EComponentType type, Entity* parent);
 	void				Remove(EComponentType type, ComponentId index);
 	void				Reset(EComponentType type, ComponentId index);
 	IComponent*			Get(EComponentType type, ComponentId index) const;
