@@ -34,7 +34,9 @@ void SystemTest::Run(int32_t runs)
 
 		auto start = clock.now();
 		//RenderSystem::RenderAllFromParent(&scene);
-		RenderSystem::RenderAll();
+		//RenderSystem::RenderAllZOrdered();
+		//RenderSystem::RenderAllSeparateGetComponent();
+		RenderSystem::RenderAllSeparateIndexing();
 
 		auto finish = clock.now();
 

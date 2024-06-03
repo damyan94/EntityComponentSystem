@@ -20,7 +20,12 @@ public:
 	virtual ~IComponent() = default;
 
 	virtual constexpr EComponentType GetType() const = 0;
-	virtual void Reset() = 0;
+	virtual inline void Reset()
+	{
+		IsValid = false;
+		Parent = nullptr;
+	}
 
+	bool IsValid = false;
 	Entity* Parent = nullptr;
 };

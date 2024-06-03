@@ -65,6 +65,7 @@ inline ComponentId ComponentDataContainer<T>::Add(Entity* parent)
 		index = AddInternal();
 	}
 
+	m_ComponentsData[index].IsValid = true;
 	m_ComponentsData[index].Parent = parent;
 
 	return index;

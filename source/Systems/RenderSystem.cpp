@@ -7,6 +7,16 @@
 #include "Components/Text.h"
 #include "GameObject.h"
 
+/*
+* Average normalized access times for each mode. 1.0 was measured to be 37 microseconds
+* 
+*				|	RenderAllFromParent	| RenderAllZOrdered	| RenderAllSeparateGetComponent	| RenderAllSeparateIndexing
+* ----------------------------------------------------------------------------------------------------------------------
+*	Release		|					4.5	|				2.6	|							1.7	|						1.0
+*	Debug		|				   62.2 |			   29.9 |						   15.0 |						7.6
+* 
+*/
+
 int32_t RenderSystem::m_ImagesDrawn = 0;
 int32_t RenderSystem::m_TextsDrawn = 0;
 
@@ -14,6 +24,8 @@ int32_t RenderSystem::m_TextsDrawn = 0;
 void RenderSystem::RenderAllFromParent(const GameObject* parent)
 {
 	const auto& children = parent->GetAllChildren();
+	ReturnIf(children.empty());
+
 	for (const auto child : children)
 	{
 		RenderAllFromParent(child);
@@ -36,29 +48,27 @@ void RenderSystem::RenderAllFromParent(const GameObject* parent)
 	}
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
-void RenderSystem::RenderAll()
+void RenderSystem::RenderAllZOrdered()
 {
 	// Transforms should be sorted by z
 	const auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
 	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
 	const auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
 
+	const auto transformsCount = transforms.size();
 	const auto imagesCount = images.size();
 	const auto textsCount = texts.size();
-	const auto transformsCount = transforms.size();
 
 	for (int32_t i = 0; i < transformsCount; i++)
 	{
 		const auto& transform = transforms[i];
-
 		ContinueIf(!transform.Parent);
 
 		const auto imageId = transform.Parent->GetComponentId(EComponentType::Image);
 		if (imageId != INVALID_COMPONENT_ID)
 		{
-			const auto& image = images[transform.Parent->GetComponentId(EComponentType::Image)];
+			const auto& image = images[imageId];
 			//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
 			m_ImagesDrawn++;
 		}
@@ -66,65 +76,75 @@ void RenderSystem::RenderAll()
 		const auto textId = transform.Parent->GetComponentId(EComponentType::Text);
 		if (textId != INVALID_COMPONENT_ID)
 		{
-			const auto& text = texts[transform.Parent->GetComponentId(EComponentType::Text)];
+			const auto& text = texts[textId];
 			//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
 			m_TextsDrawn++;
 		}
 	}
-
-
-	//for (int32_t i = 0; i < images.size(); i++)
-	//{
-	//	const auto& transform = transforms[i];
-	//	//const auto transform = image.Parent->GetComponent<Transform>();
-	//	//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
-	//	m_ImagesDrawn++;
-	//}
-	//
-	//for (int32_t i = 0; i < texts.size(); i++)
-	//{
-	//	const auto& transform = transforms[i];
-	//	//const auto transform = image.Parent->GetComponent<Transform>();
-	//	//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
-	//	m_TextsDrawn++;
-	//}
-
-
-	//for (const auto& image : images)
-	//{
-	//	//const auto transform = transforms[rand() % transforms.size()];
-	//	//const auto transform = image.Parent->GetComponent<Transform>();
-	//	//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
-	//	m_ImagesDrawn++;
-	//}
-
-	//for (const auto& text : texts)
-	//{
-	//	//const auto transform = transforms[rand() % transforms.size()];
-	//	//const auto transform = image.Parent->GetComponent<Transform>();
-	//	//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
-	//	m_TextsDrawn++;
-	//}
 }
 
-//////////////////////////////////////////////////////////////////////////////////
-//void RenderSystem::RenderAll(const GameObject* parent)
-//{
-//	// Transforms should be sorted by z
-//	const auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
-//	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
-//	const auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
-//
-//	// da ima edin ob6t konteiner za vsi4ki ne6ta deto 6te se risuvat
-//	for (const auto& image : images)
-//	{
-//		//const auto transformId = image.GetTransformId();
-//		//AssertContinueIf(transformId < 0);
-//
-//		//const auto* texture = AssetManager::Instance().GetImageTexture(image.GetTextureId()); //moje bi tova da e v drawManager-a?
-//		//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
-//	}
-//}
+////////////////////////////////////////////////////////////////////////////////
+void RenderSystem::RenderAllSeparateGetComponent()
+{
+	// Transforms should be sorted by z
+	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
+	const auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
+
+	for (const auto& image : images)
+	{
+		ContinueIf(!image.IsValid || !image.Parent);
+
+		const auto& transform = image.Parent->GetComponent<Transform>();
+		//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+		m_ImagesDrawn++;
+	}
+	
+	for (const auto& text : texts)
+	{
+		ContinueIf(!text.IsValid || !text.Parent);
+
+		const auto& transform = text.Parent->GetComponent<Transform>();
+		//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+		m_TextsDrawn++;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void RenderSystem::RenderAllSeparateIndexing()
+{
+	// Transforms should be sorted by z
+	const auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
+	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
+	const auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
+
+	const auto transformsCount = transforms.size();
+	const auto imagesCount = images.size();
+	const auto textsCount = texts.size();
+
+	for (const auto& image : images)
+	{
+		ContinueIf(!image.IsValid || !image.Parent);
+
+		const auto transformId = image.Parent->GetComponentId(EComponentType::Transform);
+		ContinueIf(transformId == INVALID_COMPONENT_ID);
+
+		const auto& transform = transforms[transformId];
+		//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+		m_ImagesDrawn++;
+	}
+
+	for (const auto& text : texts)
+	{
+		ContinueIf(!text.Parent);
+
+		const auto transformId = text.Parent->GetComponentId(EComponentType::Transform);
+		ContinueIf(transformId == INVALID_COMPONENT_ID);
+
+		const auto& transform = transforms[transformId];
+		//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+		m_TextsDrawn++;
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////////
 void RenderSystem::PrintItemsDrawn()

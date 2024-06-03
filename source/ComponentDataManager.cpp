@@ -22,8 +22,8 @@ ComponentDataManager::~ComponentDataManager()
 ////////////////////////////////////////////////////////////////////////////////
 ComponentDataManager& ComponentDataManager::Instance()
 {
-	static ComponentDataManager m_Instance;
-	return m_Instance;
+	static ComponentDataManager instance;
+	return instance;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

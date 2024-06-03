@@ -9,8 +9,9 @@ class RenderSystem
 {
 public:
 	static void RenderAllFromParent(const GameObject* parent);
-	static void RenderAll();
-	//static void RenderAll(const GameObject* parent);
+	static void RenderAllZOrdered();
+	static void RenderAllSeparateGetComponent();
+	static void RenderAllSeparateIndexing();
 
 	static void PrintItemsDrawn();
 

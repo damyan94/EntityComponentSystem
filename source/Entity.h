@@ -8,6 +8,9 @@
 #include "Components/ComponentType.h"
 #include "Components/IComponent.h"
 
+template<typename K, typename V>
+using VectorMap = std::vector<std::pair<K, V>>;
+
 ////////////////////////////////////////////////////////////////////////////////
 class Entity
 {
@@ -30,11 +33,10 @@ public:
 	ComponentId			GetComponentId(EComponentType type) const;
 private:
 	void				RemoveAllComponents();
-	//int32_t				GetIndex(EComponentType type) const;
+	int32_t				GetIndex(EComponentType type) const;
 
 private:
-	//std::unordered_map<EComponentType, ComponentId> m_Components;
-	std::vector<ComponentId> m_Components;
+	VectorMap<EComponentType, ComponentId> m_Components;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
