@@ -1,8 +1,5 @@
 #pragma once
 
-#include <vector>
-
-#include "Defines.h"
 #include "Entity.h"
 #include "Example/ITest.h"
 

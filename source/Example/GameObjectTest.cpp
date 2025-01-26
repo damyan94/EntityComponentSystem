@@ -1,8 +1,7 @@
+#include <stdafx.h>
+
 #include "Example/GameObjectTest.h"
 
-#include <chrono>
-
-#include "Utils/Random.h"
 #include "ComponentDataManager.h"
 #include "Components/Transform.h"
 #include "Components/Image.h"
@@ -12,14 +11,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 void GameObjectTest::Run(int32_t runs)
 {
-	std::chrono::system_clock clock;
+	Logger::Log("Running GameObjectTest ...");
 
-	Log("Running GameObjectTest...");
+	Time clock;
+	m_AverageTestStatistics.Reset();
 
 	for (int32_t j = 0; j < runs; j++)
 	{
 		m_TestStatistics.Reset();
-		auto start = clock.now();
+		auto start = clock.GetNow();
 
 		GameObject scene;
 		CreateGameObjects(scene);
@@ -28,18 +28,24 @@ void GameObjectTest::Run(int32_t runs)
 		RemoveComponents(scene);
 		IterateComponents();
 
-		auto finish = clock.now();
+		auto finish = clock.GetNow();
 
-		m_TestStatistics.Display((int32_t)std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count());
+		m_TestStatistics.Duration = (finish - start).GetAs(EUnitOfTime::Microsecond);
+		m_AverageTestStatistics += m_TestStatistics;
+
+		m_TestStatistics.Display();
 	}
 
-	Log("Finished running GameObjectTest.\n");
+	Logger::Log("Finished running GameObjectTest. Averages:", ETextColor::Green);
+
+	m_AverageTestStatistics /= runs;
+	m_AverageTestStatistics.Display(ETextColor::Green);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void GameObjectTest::CreateGameObjects(GameObject& scene)
 {
-	for (int32_t i = 0; i < 50; i++)
+	for (int32_t i = 0; i < 500; i++)
 	{
 		scene.AddChild(new GameObject);
 		m_TestStatistics.Created++;

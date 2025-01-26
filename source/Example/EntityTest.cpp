@@ -1,8 +1,7 @@
+#include <stdafx.h>
+
 #include "Example/EntityTest.h"
 
-#include <chrono>
-
-#include "Utils/Random.h"
 #include "ComponentDataManager.h"
 #include "Components/Transform.h"
 #include "Components/Image.h"
@@ -12,14 +11,15 @@
 ////////////////////////////////////////////////////////////////////////////////
 void EntityTest::Run(int32_t runs)
 {
-	Log("Running EntityTest...");
+	Logger::Log("Running EntityTest ...");
 
-	std::chrono::system_clock clock;
+	Time clock;
+	m_AverageTestStatistics.Reset();
 
 	for (int32_t j = 0; j < runs; j++)
 	{
 		m_TestStatistics.Reset();
-		auto start = clock.now();
+		auto start = clock.GetNow();
 
 		std::vector<Entity> entities;
 		CreateEntities(entities);
@@ -28,18 +28,24 @@ void EntityTest::Run(int32_t runs)
 		RemoveComponents(entities);
 		IterateComponents();
 
-		auto finish = clock.now();
+		auto finish = clock.GetNow();
 
-		m_TestStatistics.Display((int32_t)std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count());
+		m_TestStatistics.Duration = (finish - start).GetAs(EUnitOfTime::Microsecond);
+		m_AverageTestStatistics += m_TestStatistics;
+
+		m_TestStatistics.Display();
 	}
 
-	Log("Finished running EntityTest.\n");
+	Logger::Log("Finished running EntityTest. Averages:", ETextColor::Green);
+
+	m_AverageTestStatistics /= runs;
+	m_AverageTestStatistics.Display(ETextColor::Green);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void EntityTest::CreateEntities(std::vector<Entity>& entities)
 {
-	entities.resize(5000);
+	entities.resize(50000);
 	m_TestStatistics.Created = (int32_t)entities.size();
 }
 

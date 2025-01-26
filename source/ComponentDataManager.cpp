@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "ComponentDataManager.h"
 
 #include "ComponentDataContainer.h"

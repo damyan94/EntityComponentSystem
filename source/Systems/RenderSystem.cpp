@@ -1,6 +1,7 @@
+#include <stdafx.h>
+
 #include "Systems/RenderSystem.h"
 
-#include "Defines.h"
 #include "ComponentDataManager.h"
 #include "Components/Transform.h"
 #include "Components/Image.h"
@@ -117,10 +118,6 @@ void RenderSystem::RenderAllSeparateIndexing()
 	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
 	const auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
 
-	const auto transformsCount = transforms.size();
-	const auto imagesCount = images.size();
-	const auto textsCount = texts.size();
-
 	for (const auto& image : images)
 	{
 		ContinueIf(!image.IsValid || !image.Parent);
@@ -149,8 +146,7 @@ void RenderSystem::RenderAllSeparateIndexing()
 //////////////////////////////////////////////////////////////////////////////////
 void RenderSystem::PrintItemsDrawn()
 {
-	Utils::LogConsole("Images drawn: " + std::to_string(m_ImagesDrawn) +
-		", Texts drawn: " + std::to_string(m_TextsDrawn));
+	Logger::LogInfo(Format("Images drawn: {0}, Texts drawn: {1}.", m_ImagesDrawn, m_TextsDrawn));
 
 	m_ImagesDrawn = 0;
 	m_TextsDrawn = 0;

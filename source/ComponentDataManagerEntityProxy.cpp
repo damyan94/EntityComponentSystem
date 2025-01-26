@@ -1,3 +1,5 @@
+#include "stdafx.h"
+
 #include "ComponentDataManagerEntityProxy.h"
 
 #include "ComponentDataManager.h"

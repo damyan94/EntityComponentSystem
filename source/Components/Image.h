@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Defines.h"
 #include "ComponentType.h"
 #include "Components/IComponent.h"
 

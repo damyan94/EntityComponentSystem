@@ -1,8 +1,7 @@
+#include <stdafx.h>
+
 #include "Example/SystemTest.h"
 
-#include <chrono>
-
-#include "Utils/Random.h"
 #include "ComponentDataManager.h"
 #include "Components/Transform.h"
 #include "Components/Image.h"
@@ -11,49 +10,62 @@
 
 #include "Systems/RenderSystem.h"
 
-static int32_t totalDuration = 0;
-
 ////////////////////////////////////////////////////////////////////////////////
 void SystemTest::Run(int32_t runs)
 {
-	std::chrono::system_clock clock;
 
-	Log("Running GameObjectTest...");
+	auto run = [this, runs](const std::string& name, VoidFunction callback)
+		{
+			Logger::Log(Format("Running SystemTest [{0}] ...", name));
 
-	for (int32_t j = 0; j < runs; j++)
-	{
-		m_TestStatistics.Reset();
-		//auto start = clock.now();
+			Time clock;
+			m_AverageTestStatistics.Reset();
 
-		GameObject scene;
-		CreateGameObjects(scene);
-		AddRandomComponents(scene);
-		RemoveGameObjects(scene);
-		RemoveComponents(scene);
-		IterateComponents();
+			for (int32_t j = 0; j < runs; j++)
+			{
+				m_TestStatistics.Reset();
+				//auto start = clock.now();
 
-		auto start = clock.now();
-		//RenderSystem::RenderAllFromParent(&scene);
-		//RenderSystem::RenderAllZOrdered();
-		//RenderSystem::RenderAllSeparateGetComponent();
-		RenderSystem::RenderAllSeparateIndexing();
+				GameObject scene;
+				CreateGameObjects(scene);
+				AddRandomComponents(scene);
+				RemoveGameObjects(scene);
+				RemoveComponents(scene);
+				IterateComponents();
 
-		auto finish = clock.now();
+				auto start = clock.GetNow();
+				callback();
 
-		const auto duration = (int32_t)std::chrono::duration_cast<std::chrono::microseconds>(finish - start).count();
-		totalDuration += duration;
-		m_TestStatistics.Display(duration);
-		RenderSystem::PrintItemsDrawn();
-	}
+				auto finish = clock.GetNow();
 
-	Log("Finished running GameObjectTest.\n");
-	Log("Average: " + std::to_string(totalDuration / runs));
+				m_TestStatistics.Duration = (finish - start).GetAs(EUnitOfTime::Microsecond);
+				m_AverageTestStatistics += m_TestStatistics;
+
+				m_TestStatistics.Display();
+				RenderSystem::PrintItemsDrawn();
+			}
+
+			Logger::Log(Format("Finished running SystemTest [{0}]. Averages:", name), ETextColor::Green);
+
+			m_AverageTestStatistics /= runs;
+			m_AverageTestStatistics.Display(ETextColor::Green);
+		};
+
+	//RenderSystem::RenderAllFromParent(&scene);
+	//RenderSystem::RenderAllZOrdered();
+	//RenderSystem::RenderAllSeparateGetComponent();
+	//RenderSystem::RenderAllSeparateIndexing();
+
+	//run("RenderSystem::RenderAllFromParent", RenderSystem::RenderAllFromParent);
+	//run("RenderSystem::RenderAllZOrdered", RenderSystem::RenderAllZOrdered);
+	//run("RenderSystem::RenderAllSeparateGetComponent", RenderSystem::RenderAllSeparateGetComponent);
+	run("RenderSystem::RenderAllSeparateIndexing", RenderSystem::RenderAllSeparateIndexing);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void SystemTest::CreateGameObjects(GameObject& scene)
 {
-	for (int32_t i = 0; i < 50; i++)
+	for (int32_t i = 0; i < 500; i++)
 	{
 		scene.AddChild(new GameObject);
 		m_TestStatistics.Created++;

@@ -1,15 +1,21 @@
-#include <cstdint>
-#include <ctime>
+#include <stdafx.h>
 
 #include "Defines.h"
+#include "Example/BaselineTest.h"
 #include "Example/EntityTest.h"
 #include "Example/GameObjectTest.h"
 #include "Example/SystemTest.h"
 
+////////////////////////////////////////////////////////////////////////////////
 int32_t main(int32_t argC, char** argV)
 {
 	srand((uint32_t)time(nullptr));
+	
+	Logger::SetLogLevel(ELogLevel::LogText);
 
+	BaselineTest test0;
+	test0.Run(10);
+	
 	//EntityTest test1;
 	//test1.Run(10);
 
@@ -19,6 +25,5 @@ int32_t main(int32_t argC, char** argV)
 	SystemTest test3;
 	test3.Run(10);
 
-	system("pause");
 	return EXIT_SUCCESS;
 }
