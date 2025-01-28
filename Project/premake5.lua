@@ -18,6 +18,7 @@ end
 
 local baseDir 			= "../"
 local buildDir 			= baseDir .. "Build/"
+local dependenciesDir 	= baseDir .. "Dependencies/"
 local projectDir 		= baseDir .. "Project/"
 local sourceDir 		= baseDir .. "Source/"
 
@@ -44,15 +45,29 @@ function setupCommonProjectSettings(_kind)
 	includedirs
 	{
 		baseDir,
-		sourceDir
+		sourceDir,
+		dependenciesDir .. "SDL2/SDL2/include",
+		dependenciesDir .. "SDL2/SDL2_image/include",
+		dependenciesDir .. "SDL2/SDL2_ttf/include",
+		dependenciesDir .. "SDL2/SDL2_mixer/include",
+		dependenciesDir .. "imgui-master",
+		dependenciesDir .. "imgui-master/backends"
 	}
 	
 	libdirs
 	{
+		dependenciesDir .. "SDL2/SDL2/lib/x64",
+		dependenciesDir .. "SDL2/SDL2_image/lib/x64",
+		dependenciesDir .. "SDL2/SDL2_ttf/lib/x64",
+		dependenciesDir .. "SDL2/SDL2_mixer/lib/x64"
 	}
 	
 	links
 	{
+		"SDL2",
+		"SDL2_image",
+		"SDL2_ttf",
+		"SDL2_mixer"
 	}
 	
 	flags
@@ -136,7 +151,7 @@ end
 workspace "EntityComponentSystem"
 	location (projectDir .. targetSystem .. "/")
 	architecture "x64"
-	startproject "ECS"
+	startproject "EntityComponentSystem"
 
 	configurations
 	{

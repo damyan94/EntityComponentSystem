@@ -16,6 +16,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 void BaselineTest::Run(int32_t runs)
 {
+	DrawManager::Instance().ClearScreen();
+
 	Logger::Log("Running BaselineTest ...");
 
 	Time clock;
@@ -48,6 +50,8 @@ void BaselineTest::Run(int32_t runs)
 
 	m_AverageTestStatistics /= runs;
 	m_AverageTestStatistics.Display(ETextColor::Green);
+
+	DrawManager::Instance().FinishFrame();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -159,7 +163,12 @@ void BaselineTest::IterateComponents()
 {
 	for (auto& item : m_UIs)
 	{
-		item.pos.SetPosition({ 1, 1, 1 });
+		item.pos.SetPosition(
+			{
+				Utils::Random<float>(0, 100),
+				Utils::Random<float>(0, 100),
+				Utils::Random<float>(0, 100)
+			});
 		m_TestStatistics.ComponentsChanged++;
 
 		if (Utils::Probability(30))
@@ -171,13 +180,23 @@ void BaselineTest::IterateComponents()
 
 	for (auto& item : m_Tiles)
 	{
-		item.pos.SetPosition({ 1, 1, 1 });
+		item.pos.SetPosition(
+			{
+				Utils::Random<float>(0, 100),
+				Utils::Random<float>(0, 100),
+				Utils::Random<float>(0, 100)
+			});
 		m_TestStatistics.ComponentsChanged++;
 	}
 
 	for (auto& item : m_Units)
 	{
-		item.pos.SetPosition({ 1, 1, 1 });
+		item.pos.SetPosition(
+			{
+				Utils::Random<float>(0, 100),
+				Utils::Random<float>(0, 100),
+				Utils::Random<float>(0, 100)
+			});
 		m_TestStatistics.ComponentsChanged++;
 		item.action.Execute();
 	}
@@ -195,21 +214,21 @@ void BaselineTest::Render() const
 
 	for (int32_t i = 0; i < uiCount / 2; i++)
 	{
-		m_UIs[/*Utils::Random<size_t>(0, uiCount / 2)*/i].Render();
+		m_UIs[Utils::Random<size_t>(0, uiCount / 2)].Render();
 		m_TextsDrawn++;
 	}
 
 	for (int32_t i = 0; i < tileCount / 2; i++)
 	{
-		m_Tiles[/*Utils::Random<size_t>(0, tileCount / 2)*/i].Render();
+		m_Tiles[Utils::Random<size_t>(0, tileCount / 2)].Render();
 		m_ImagesDrawn++;
 	}
 
 	for (int32_t i = 0; i < m_Units.size() / 2; i++)
 	{
-		m_Units[/*Utils::Random<size_t>(0, unitCount / 2)*/i].Render();
+		m_Units[Utils::Random<size_t>(0, unitCount / 2)].Render();
 		m_ImagesDrawn++;
 	}
 
-	Logger::LogInfo(Format("Images drawn: {0}, Texts drawn: {1}.", m_ImagesDrawn, m_TextsDrawn));
+	Logger::Log(Format("Images drawn: {0}, Texts drawn: {1}.", m_ImagesDrawn, m_TextsDrawn));
 }

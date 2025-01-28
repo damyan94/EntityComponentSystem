@@ -7,6 +7,7 @@
 #include "Components/Image.h"
 #include "Components/Text.h"
 #include "GameObject.h"
+#include "Example/DrawManager.h"
 
 /*
 * Average normalized access times for each mode. 1.0 was measured to be 37 microseconds
@@ -21,37 +22,69 @@
 int32_t RenderSystem::m_ImagesDrawn = 0;
 int32_t RenderSystem::m_TextsDrawn = 0;
 
+// Hack but should be ok, since the vector size is not changed
+static const auto& _transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
+static const auto& _images = ComponentDataManager::Instance().GetAllComponents<Image>();
+static const auto& _texts = ComponentDataManager::Instance().GetAllComponents<Text>();
+
 ////////////////////////////////////////////////////////////////////////////////
-void RenderSystem::RenderAllFromParent(const GameObject* parent)
+void RenderSystem::RenderAllFromParent(const GameObject* obj)
 {
-	const auto& children = parent->GetAllChildren();
+	DrawManager::Instance().ClearScreen();
+
+	const auto transformId = obj->GetComponentId(EComponentType::Transform);
+	ReturnIf(transformId == INVALID_COMPONENT_ID);
+
+	const auto& transform = _transforms[transformId];
+
+	if (const auto imageId = obj->GetComponentId(EComponentType::Image) != INVALID_COMPONENT_ID)
+	{
+		const auto& image = _images[imageId];
+		DrawManager::Instance().RenderRandomImage(transform);
+		m_ImagesDrawn++;
+	}
+
+	if (const auto textId = obj->GetComponentId(EComponentType::Text) != INVALID_COMPONENT_ID)
+	{
+		const auto& text = _texts[textId];
+		DrawManager::Instance().RenderRandomImage(transform);
+		m_TextsDrawn++;
+	}
+
+	/////
+
+	//const auto transform = obj->GetComponent<Transform>();
+
+	//const auto image = obj->GetComponent<Image>();
+	//if (image)
+	//{
+	//	//DrawManager::Instance().RenderRandomImage(transform);
+	//	m_ImagesDrawn++;
+	//}
+
+	//const auto text = obj->GetComponent<Text>();
+	//if (text)
+	//{
+	//	//DrawManager::Instance().RenderRandomImage(transform);
+	//	m_TextsDrawn++;
+	//}
+
+	const auto& children = obj->GetAllChildren();
 	ReturnIf(children.empty());
 
 	for (const auto child : children)
 	{
-		RenderAllFromParent(child);
-
-		const auto transform = child->GetComponent<Transform>();
-
-		const auto image = child->GetComponent<Image>();
-		if (image)
-		{
-			//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
-			m_ImagesDrawn++;
-		}
-
-		const auto text = child->GetComponent<Text>();
-		if (text)
-		{
-			//DrawManager::Instance().RenderIndividual(texture/*text.GetTextureId()*/, transform);
-			m_TextsDrawn++;
-		}
+		RenderAllFromParent(child);		
 	}
+
+	DrawManager::Instance().FinishFrame();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void RenderSystem::RenderAllZOrdered()
 {
+	DrawManager::Instance().ClearScreen();
+
 	// Transforms should be sorted by z
 	const auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
 	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
@@ -70,7 +103,7 @@ void RenderSystem::RenderAllZOrdered()
 		if (imageId != INVALID_COMPONENT_ID)
 		{
 			const auto& image = images[imageId];
-			//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+			DrawManager::Instance().RenderRandomImage(transform);
 			m_ImagesDrawn++;
 		}
 
@@ -78,15 +111,19 @@ void RenderSystem::RenderAllZOrdered()
 		if (textId != INVALID_COMPONENT_ID)
 		{
 			const auto& text = texts[textId];
-			//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+			DrawManager::Instance().RenderRandomImage(transform);
 			m_TextsDrawn++;
 		}
 	}
+
+	DrawManager::Instance().FinishFrame();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void RenderSystem::RenderAllSeparateGetComponent()
 {
+	DrawManager::Instance().ClearScreen();
+
 	// Transforms should be sorted by z
 	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
 	const auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
@@ -96,7 +133,7 @@ void RenderSystem::RenderAllSeparateGetComponent()
 		ContinueIf(!image.IsValid || !image.Parent);
 
 		const auto& transform = image.Parent->GetComponent<Transform>();
-		//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+		DrawManager::Instance().RenderRandomImage(*transform);
 		m_ImagesDrawn++;
 	}
 	
@@ -105,14 +142,18 @@ void RenderSystem::RenderAllSeparateGetComponent()
 		ContinueIf(!text.IsValid || !text.Parent);
 
 		const auto& transform = text.Parent->GetComponent<Transform>();
-		//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+		DrawManager::Instance().RenderRandomImage(*transform);
 		m_TextsDrawn++;
 	}
+
+	DrawManager::Instance().FinishFrame();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void RenderSystem::RenderAllSeparateIndexing()
 {
+	DrawManager::Instance().ClearScreen();
+
 	// Transforms should be sorted by z
 	const auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
 	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
@@ -126,7 +167,7 @@ void RenderSystem::RenderAllSeparateIndexing()
 		ContinueIf(transformId == INVALID_COMPONENT_ID);
 
 		const auto& transform = transforms[transformId];
-		//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+		DrawManager::Instance().RenderRandomImage(transform);
 		m_ImagesDrawn++;
 	}
 
@@ -138,15 +179,17 @@ void RenderSystem::RenderAllSeparateIndexing()
 		ContinueIf(transformId == INVALID_COMPONENT_ID);
 
 		const auto& transform = transforms[transformId];
-		//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+		DrawManager::Instance().RenderRandomImage(transform);
 		m_TextsDrawn++;
 	}
+
+	DrawManager::Instance().FinishFrame();
 }
 
 //////////////////////////////////////////////////////////////////////////////////
 void RenderSystem::PrintItemsDrawn()
 {
-	Logger::LogInfo(Format("Images drawn: {0}, Texts drawn: {1}.", m_ImagesDrawn, m_TextsDrawn));
+	Logger::Log(Format("Images drawn: {0}, Texts drawn: {1}.", m_ImagesDrawn, m_TextsDrawn));
 
 	m_ImagesDrawn = 0;
 	m_TextsDrawn = 0;

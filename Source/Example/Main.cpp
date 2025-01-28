@@ -13,17 +13,27 @@ int32_t main(int32_t argC, char** argV)
 	
 	Logger::SetLogLevel(ELogLevel::LogText);
 
-	BaselineTest test0;
-	test0.Run(10);
-	
-	//EntityTest test1;
-	//test1.Run(10);
+	DrawManager::Instance().Init();
 
-	//GameObjectTest test2;
-	//test2.Run(10);
+	while (true)
+	{
+		Time start;
 
-	SystemTest test3;
-	test3.Run(10);
+		BaselineTest test0;
+		test0.Run(1);
+
+		//EntityTest test1;
+		//test1.Run(1);
+
+		//GameObjectTest test2;
+		//test2.Run(1);
+
+		//SystemTest test3;
+		//test3.Run(1);
+
+		auto fps = 1000 / (start.GetElapsedTimeUntilNow(EUnitOfTime::Millisecond));
+		Logger::Log(Format("{0} FPS.", fps), ETextColor::Cyan);
+	}
 
 	return EXIT_SUCCESS;
 }

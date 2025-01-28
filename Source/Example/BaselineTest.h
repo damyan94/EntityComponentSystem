@@ -8,6 +8,8 @@
 #include "Components/Text.h"
 #include "Components/Action.h"
 
+#include "Example/DrawManager.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 class BaselineTest
 	: public ITest
@@ -37,7 +39,7 @@ private:
 
 		void Render() const
 		{
-			//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+			DrawManager::Instance().RenderRandomImage(pos);
 		}
 	};
 
@@ -53,7 +55,7 @@ private:
 
 		void Render() const
 		{
-			//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+			DrawManager::Instance().RenderRandomImage(pos);
 		}
 	};
 
@@ -70,7 +72,7 @@ private:
 
 		void Render() const
 		{
-			//DrawManager::Instance().RenderIndividual(texture/*image.GetTextureId()*/, transform);
+			DrawManager::Instance().RenderRandomImage(pos);
 		}
 	};
 

@@ -25,6 +25,7 @@ public:
 
 	GameObject*			GetChild(int32_t index) const;
 	const GameObjectVector&	GetAllChildren() const;
+	bool				HasChildren() const;
 
 	void				SetParent(GameObject* parent);
 	GameObject*			GetParent() const;

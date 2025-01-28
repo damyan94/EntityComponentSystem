@@ -57,8 +57,8 @@ void SystemTest::Run(int32_t runs)
 	//RenderSystem::RenderAllSeparateIndexing();
 
 	//run("RenderSystem::RenderAllFromParent", RenderSystem::RenderAllFromParent);
-	//run("RenderSystem::RenderAllZOrdered", RenderSystem::RenderAllZOrdered);
-	//run("RenderSystem::RenderAllSeparateGetComponent", RenderSystem::RenderAllSeparateGetComponent);
+	run("RenderSystem::RenderAllZOrdered", RenderSystem::RenderAllZOrdered);
+	run("RenderSystem::RenderAllSeparateGetComponent", RenderSystem::RenderAllSeparateGetComponent);
 	run("RenderSystem::RenderAllSeparateIndexing", RenderSystem::RenderAllSeparateIndexing);
 }
 

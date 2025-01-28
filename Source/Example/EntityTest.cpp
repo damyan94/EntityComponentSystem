@@ -130,7 +130,12 @@ void EntityTest::IterateComponents()
 	auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
 	for (auto& item : transforms)
 	{
-		item.SetPosition({ 1, 1, 1 });
+		item.SetPosition(
+			{
+				Utils::Random<float>(0, 100),
+				Utils::Random<float>(0, 100),
+				Utils::Random<float>(0, 100)
+			});
 		m_TestStatistics.ComponentsChanged++;
 	}
 
