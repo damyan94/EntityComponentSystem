@@ -8,8 +8,17 @@
 #include "Components/ComponentType.h"
 #include "Components/IComponent.h"
 
+#define USE_VECTOR_MAP
+
+#ifdef USE_VECTOR_MAP
 template<typename K, typename V>
 using VectorMap = std::vector<std::pair<K, V>>;
+
+#else
+template<typename K, typename V>
+using VectorMap = std::unordered_map<K, V>;
+
+#endif // !USE_VECTOR_MAP
 
 ////////////////////////////////////////////////////////////////////////////////
 class Entity
@@ -37,6 +46,7 @@ private:
 
 private:
 	VectorMap<EComponentType, ComponentId> m_Components;
+	uint64_t m_ComponentMask;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -30,8 +30,6 @@ static const auto& _texts = ComponentDataManager::Instance().GetAllComponents<Te
 ////////////////////////////////////////////////////////////////////////////////
 void RenderSystem::RenderAllFromParent(const GameObject* obj)
 {
-	DrawManager::Instance().ClearScreen();
-
 	const auto transformId = obj->GetComponentId(EComponentType::Transform);
 	ReturnIf(transformId == INVALID_COMPONENT_ID);
 
@@ -76,15 +74,11 @@ void RenderSystem::RenderAllFromParent(const GameObject* obj)
 	{
 		RenderAllFromParent(child);		
 	}
-
-	DrawManager::Instance().FinishFrame();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void RenderSystem::RenderAllZOrdered()
 {
-	DrawManager::Instance().ClearScreen();
-
 	// Transforms should be sorted by z
 	const auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
 	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
@@ -115,15 +109,11 @@ void RenderSystem::RenderAllZOrdered()
 			m_TextsDrawn++;
 		}
 	}
-
-	DrawManager::Instance().FinishFrame();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void RenderSystem::RenderAllSeparateGetComponent()
 {
-	DrawManager::Instance().ClearScreen();
-
 	// Transforms should be sorted by z
 	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
 	const auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
@@ -145,15 +135,11 @@ void RenderSystem::RenderAllSeparateGetComponent()
 		DrawManager::Instance().RenderRandomImage(*transform);
 		m_TextsDrawn++;
 	}
-
-	DrawManager::Instance().FinishFrame();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void RenderSystem::RenderAllSeparateIndexing()
 {
-	DrawManager::Instance().ClearScreen();
-
 	// Transforms should be sorted by z
 	const auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
 	const auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
@@ -182,8 +168,6 @@ void RenderSystem::RenderAllSeparateIndexing()
 		DrawManager::Instance().RenderRandomImage(transform);
 		m_TextsDrawn++;
 	}
-
-	DrawManager::Instance().FinishFrame();
 }
 
 //////////////////////////////////////////////////////////////////////////////////

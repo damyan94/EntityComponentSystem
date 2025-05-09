@@ -8,17 +8,17 @@
 #include "Components/Text.h"
 #include "Components/Action.h"
 
-#define UI_COUNT 25000
-#define TILE_COUNT 15000
-#define UNIT_COUNT 10000
+#include "Example/DrawManager.h"
+
+#define UI_COUNT 2500
+#define TILE_COUNT 1500
+#define UNIT_COUNT 1000
 #define TOTAL_COUNT UI_COUNT + TILE_COUNT + UNIT_COUNT
 
 ////////////////////////////////////////////////////////////////////////////////
 void BaselineTest::Run(int32_t runs)
 {
-	DrawManager::Instance().ClearScreen();
-
-	Logger::Log("Running BaselineTest ...");
+	//Logger::Log("Running BaselineTest ...");
 
 	Time clock;
 	m_AverageTestStatistics.Reset();
@@ -28,11 +28,8 @@ void BaselineTest::Run(int32_t runs)
 		m_TestStatistics.Reset();
 		//auto start = clock.GetNow();
 
-		CreateEntities();
-		AddRandomComponents();
-		RemoveEntities();
-		RemoveComponents();
-		IterateComponents();
+		Init();
+		Update();
 
 		auto start = clock.GetNow();
 
@@ -46,12 +43,52 @@ void BaselineTest::Run(int32_t runs)
 		m_TestStatistics.Display();
 	}
 
-	Logger::Log("Finished running BaselineTest. Averages:", ETextColor::Green);
+	//Logger::Log("Finished running BaselineTest. Averages:", ETextColor::Green);
 
 	m_AverageTestStatistics /= runs;
-	m_AverageTestStatistics.Display(ETextColor::Green);
+	//m_AverageTestStatistics.Display(ETextColor::Green);
+}
 
-	DrawManager::Instance().FinishFrame();
+////////////////////////////////////////////////////////////////////////////////
+void BaselineTest::Init()
+{
+	CreateEntities();
+	AddRandomComponents();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void BaselineTest::Update()
+{
+	//RemoveEntities();
+	//RemoveComponents();
+	IterateComponents();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void BaselineTest::Render() const
+{
+	int32_t m_ImagesDrawn = 0;
+	int32_t m_TextsDrawn = 0;
+
+	for (const auto& item : m_UIs)
+	{
+		item.Render();
+		m_TextsDrawn++;
+	}
+
+	for (const auto& item : m_Tiles)
+	{
+		item.Render();
+		m_ImagesDrawn++;
+	}
+
+	for (const auto& item : m_Units)
+	{
+		item.Render();
+		m_ImagesDrawn++;
+	}
+
+	//Logger::Log(Format("Images drawn: {0}, Texts drawn: {1}.", m_ImagesDrawn, m_TextsDrawn));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -72,9 +109,9 @@ void BaselineTest::AddRandomComponents()
 	{
 		entity.pos.SetPosition(
 			{
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100)
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f)
 			});
 		m_TestStatistics.ComponentsChanged++;
 	}
@@ -83,9 +120,9 @@ void BaselineTest::AddRandomComponents()
 	{
 		entity.pos.SetPosition(
 			{
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100)
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f)
 			});
 		m_TestStatistics.ComponentsChanged++;
 	}
@@ -94,9 +131,9 @@ void BaselineTest::AddRandomComponents()
 	{
 		entity.pos.SetPosition(
 			{
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100)
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f)
 			});
 		m_TestStatistics.ComponentsChanged++;
 	}
@@ -165,15 +202,15 @@ void BaselineTest::IterateComponents()
 	{
 		item.pos.SetPosition(
 			{
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100)
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f)
 			});
 		m_TestStatistics.ComponentsChanged++;
 
 		if (Utils::Probability(30))
 		{
-			item.text.SetText("Hi");
+			//item.text.SetText("Hi");
 			m_TestStatistics.ComponentsChanged++;
 		}
 	}
@@ -182,9 +219,9 @@ void BaselineTest::IterateComponents()
 	{
 		item.pos.SetPosition(
 			{
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100)
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f)
 			});
 		m_TestStatistics.ComponentsChanged++;
 	}
@@ -193,42 +230,11 @@ void BaselineTest::IterateComponents()
 	{
 		item.pos.SetPosition(
 			{
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100)
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f)
 			});
 		m_TestStatistics.ComponentsChanged++;
 		item.action.Execute();
 	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-void BaselineTest::Render() const
-{
-	int32_t m_ImagesDrawn = 0;
-	int32_t m_TextsDrawn = 0;
-
-	const auto uiCount = m_UIs.size();
-	const auto tileCount = m_Tiles.size();
-	const auto unitCount = m_Units.size();
-
-	for (int32_t i = 0; i < uiCount / 2; i++)
-	{
-		m_UIs[Utils::Random<size_t>(0, uiCount / 2)].Render();
-		m_TextsDrawn++;
-	}
-
-	for (int32_t i = 0; i < tileCount / 2; i++)
-	{
-		m_Tiles[Utils::Random<size_t>(0, tileCount / 2)].Render();
-		m_ImagesDrawn++;
-	}
-
-	for (int32_t i = 0; i < m_Units.size() / 2; i++)
-	{
-		m_Units[Utils::Random<size_t>(0, unitCount / 2)].Render();
-		m_ImagesDrawn++;
-	}
-
-	Logger::Log(Format("Images drawn: {0}, Texts drawn: {1}.", m_ImagesDrawn, m_TextsDrawn));
 }

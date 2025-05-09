@@ -46,7 +46,7 @@ public:
 
 	static DrawManager& Instance();
 
-	bool Init();
+	bool Init(bool headless);
 	void Deinit();
 	void Update();
 
@@ -65,4 +65,7 @@ private:
 
 	SDL_Window* m_Window;
 	SDL_Renderer* m_Renderer;
+
+	size_t m_DrawCalls;
+	bool m_Headless;
 };

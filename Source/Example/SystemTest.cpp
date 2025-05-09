@@ -10,13 +10,16 @@
 
 #include "Systems/RenderSystem.h"
 
+#define MOTHER_OBJECTS_COUNT 55
+#define CHILDREN_COUNT 100
+#define TOTAL_OBJECTS MOTHER_OBJECTS_COUNT * CHILDREN_COUNT
+
 ////////////////////////////////////////////////////////////////////////////////
 void SystemTest::Run(int32_t runs)
 {
-
-	auto run = [this, runs](const std::string& name, VoidFunction callback)
+	auto runRenderAllFromParent = [this, runs](const std::string& name)
 		{
-			Logger::Log(Format("Running SystemTest [{0}] ...", name));
+			//Logger::Log(Format("Running SystemTest [{0}] ...", name));
 
 			Time clock;
 			m_AverageTestStatistics.Reset();
@@ -26,11 +29,46 @@ void SystemTest::Run(int32_t runs)
 				m_TestStatistics.Reset();
 				//auto start = clock.now();
 
-				GameObject scene;
-				CreateGameObjects(scene);
-				AddRandomComponents(scene);
-				RemoveGameObjects(scene);
-				RemoveComponents(scene);
+				CreateGameObjects();
+				AddRandomComponents();
+				RemoveGameObjects();
+				RemoveComponents();
+				IterateComponents();
+
+				auto start = clock.GetNow();
+				RenderSystem::RenderAllFromParent(&m_Scene);
+
+				auto finish = clock.GetNow();
+
+				m_TestStatistics.Duration = (finish - start).GetAs(EUnitOfTime::Microsecond);
+				m_AverageTestStatistics += m_TestStatistics;
+
+				m_TestStatistics.Display();
+				//RenderSystem::PrintItemsDrawn();
+			}
+
+			//Logger::Log(Format("Finished running SystemTest [{0}]. Averages:", name), ETextColor::Green);
+
+			m_AverageTestStatistics /= runs;
+			//m_AverageTestStatistics.Display(ETextColor::Green);
+		};
+
+	auto run = [this, runs](const std::string& name, VoidFunction callback)
+		{
+			//Logger::Log(Format("Running SystemTest [{0}] ...", name));
+
+			Time clock;
+			m_AverageTestStatistics.Reset();
+
+			for (int32_t j = 0; j < runs; j++)
+			{
+				m_TestStatistics.Reset();
+				//auto start = clock.now();
+
+				CreateGameObjects();
+				AddRandomComponents();
+				RemoveGameObjects();
+				RemoveComponents();
 				IterateComponents();
 
 				auto start = clock.GetNow();
@@ -42,39 +80,58 @@ void SystemTest::Run(int32_t runs)
 				m_AverageTestStatistics += m_TestStatistics;
 
 				m_TestStatistics.Display();
-				RenderSystem::PrintItemsDrawn();
+				//RenderSystem::PrintItemsDrawn();
 			}
 
-			Logger::Log(Format("Finished running SystemTest [{0}]. Averages:", name), ETextColor::Green);
+			//Logger::Log(Format("Finished running SystemTest [{0}]. Averages:", name), ETextColor::Green);
 
 			m_AverageTestStatistics /= runs;
-			m_AverageTestStatistics.Display(ETextColor::Green);
+			//m_AverageTestStatistics.Display(ETextColor::Green);
 		};
 
-	//RenderSystem::RenderAllFromParent(&scene);
-	//RenderSystem::RenderAllZOrdered();
-	//RenderSystem::RenderAllSeparateGetComponent();
-	//RenderSystem::RenderAllSeparateIndexing();
-
-	//run("RenderSystem::RenderAllFromParent", RenderSystem::RenderAllFromParent);
-	run("RenderSystem::RenderAllZOrdered", RenderSystem::RenderAllZOrdered);
-	run("RenderSystem::RenderAllSeparateGetComponent", RenderSystem::RenderAllSeparateGetComponent);
+	//runRenderAllFromParent("RenderSystem::RenderAllFromParent");
+	//run("RenderSystem::RenderAllZOrdered", RenderSystem::RenderAllZOrdered);
+	//run("RenderSystem::RenderAllSeparateGetComponent", RenderSystem::RenderAllSeparateGetComponent);
 	run("RenderSystem::RenderAllSeparateIndexing", RenderSystem::RenderAllSeparateIndexing);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void SystemTest::CreateGameObjects(GameObject& scene)
+void SystemTest::Init()
 {
-	for (int32_t i = 0; i < 500; i++)
+	CreateGameObjects();
+	AddRandomComponents();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void SystemTest::Update()
+{
+	//RemoveGameObjects();
+	//RemoveComponents();
+	IterateComponents();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void SystemTest::Render() const
+{
+	//RenderSystem::RenderAllFromParent(&scene);
+	//RenderSystem::RenderAllZOrdered();
+	//RenderSystem::RenderAllSeparateGetComponent();
+	RenderSystem::RenderAllSeparateIndexing();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void SystemTest::CreateGameObjects()
+{
+	for (int32_t i = 0; i < MOTHER_OBJECTS_COUNT; i++)
 	{
-		scene.AddChild(new GameObject);
+		m_Scene.AddChild(new GameObject);
 		m_TestStatistics.Created++;
 	}
 
-	for (auto gameObject : scene.GetAllChildren())
+	for (auto gameObject : m_Scene.GetAllChildren())
 	{
 		GameObjectVector children;
-		children.resize(100);
+		children.resize(CHILDREN_COUNT);
 		for (int32_t i = 0; i < children.size(); i++)
 		{
 			children[i] = new GameObject;
@@ -86,9 +143,9 @@ void SystemTest::CreateGameObjects(GameObject& scene)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void SystemTest::AddRandomComponents(GameObject& scene)
+void SystemTest::AddRandomComponents()
 {
-	for (auto object : scene.GetAllChildren())
+	for (auto object : m_Scene.GetAllChildren())
 	{
 		for (auto child : object->GetAllChildren())
 		{
@@ -97,9 +154,9 @@ void SystemTest::AddRandomComponents(GameObject& scene)
 			{
 				transform->SetPosition(
 					{
-						Utils::Random<float>(0, 100),
-						Utils::Random<float>(0, 100),
-						Utils::Random<float>(0, 100)
+						Utils::Random<float>(0.0f, 1000.0f),
+						Utils::Random<float>(0.0f, 1000.0f),
+						Utils::Random<float>(0.0f, 1000.0f)
 					});
 				m_TestStatistics.ComponentsChanged++;
 			}
@@ -126,23 +183,23 @@ void SystemTest::AddRandomComponents(GameObject& scene)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void SystemTest::RemoveGameObjects(GameObject& scene)
+void SystemTest::RemoveGameObjects()
 {
-	for (int32_t i = 0; i < scene.GetAllChildren().size(); i++)
+	for (int32_t i = 0; i < m_Scene.GetAllChildren().size(); i++)
 	{
 		if (Utils::Probability(10))
 		{
 			m_TestStatistics.Destroyed++;
-			m_TestStatistics.Destroyed += (int32_t)scene.GetChild(i)->GetAllChildren().size();
-			scene.RemoveChild(i);
+			m_TestStatistics.Destroyed += (int32_t)m_Scene.GetChild(i)->GetAllChildren().size();
+			m_Scene.RemoveChild(i);
 		}
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void SystemTest::RemoveComponents(GameObject& scene)
+void SystemTest::RemoveComponents()
 {
-	for (auto object : scene.GetAllChildren())
+	for (auto object : m_Scene.GetAllChildren())
 	{
 		for (auto child : object->GetAllChildren())
 		{
@@ -188,7 +245,7 @@ void SystemTest::IterateComponents()
 	{
 		if (Utils::Probability(30))
 		{
-			item.SetText("Hi");
+			//item.SetText("Hi");
 			m_TestStatistics.ComponentsChanged++;
 		}
 	}

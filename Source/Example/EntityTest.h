@@ -9,11 +9,16 @@ class EntityTest
 {
 public:
 	void Run(int32_t runs) final;
+	void Init() final;
+	void Update() final;
+	void Render() const final;
 
 private:
-	void CreateEntities(std::vector<Entity>& entities);
-	void AddRandomComponents(std::vector<Entity>& entities);
-	void RemoveEntities(std::vector<Entity>& entities);
-	void RemoveComponents(std::vector<Entity>& entities);
+	void CreateEntities();
+	void AddRandomComponents();
+	void RemoveEntities();
+	void RemoveComponents();
 	void IterateComponents();
+
+	std::vector<Entity> m_Entities;
 };

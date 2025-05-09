@@ -8,10 +8,14 @@
 #include "Components/Text.h"
 #include "Components/Action.h"
 
+#include "Example/DrawManager.h"
+
+#define ENTITY_COUNT 5000
+
 ////////////////////////////////////////////////////////////////////////////////
 void EntityTest::Run(int32_t runs)
 {
-	Logger::Log("Running EntityTest ...");
+	//Logger::Log("Running EntityTest ...");
 
 	Time clock;
 	m_AverageTestStatistics.Reset();
@@ -19,49 +23,81 @@ void EntityTest::Run(int32_t runs)
 	for (int32_t j = 0; j < runs; j++)
 	{
 		m_TestStatistics.Reset();
+
+		Init();
+		Update();
+
 		auto start = clock.GetNow();
 
-		std::vector<Entity> entities;
-		CreateEntities(entities);
-		AddRandomComponents(entities);
-		RemoveEntities(entities);
-		RemoveComponents(entities);
-		IterateComponents();
+		Render();
 
 		auto finish = clock.GetNow();
 
 		m_TestStatistics.Duration = (finish - start).GetAs(EUnitOfTime::Microsecond);
 		m_AverageTestStatistics += m_TestStatistics;
 
-		m_TestStatistics.Display();
+		//m_TestStatistics.Display();
 	}
 
-	Logger::Log("Finished running EntityTest. Averages:", ETextColor::Green);
+	//Logger::Log("Finished running EntityTest. Averages:", ETextColor::Green);
 
 	m_AverageTestStatistics /= runs;
-	m_AverageTestStatistics.Display(ETextColor::Green);
+	//m_AverageTestStatistics.Display(ETextColor::Green);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void EntityTest::CreateEntities(std::vector<Entity>& entities)
+void EntityTest::Init()
 {
-	entities.resize(50000);
-	m_TestStatistics.Created = (int32_t)entities.size();
+	CreateEntities();
+	AddRandomComponents();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void EntityTest::AddRandomComponents(std::vector<Entity>& entities)
+void EntityTest::Update()
 {
-	for (auto& entity : entities)
+	//RemoveEntities();
+	//RemoveComponents();
+	IterateComponents();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void EntityTest::Render() const
+{
+	auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
+	for (const auto& item : images)
+	{
+		auto pos = item.Parent->GetComponent<Transform>();
+		DrawManager::Instance().RenderRandomImage(*pos);
+	}
+
+	auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
+	for (const auto& item : texts)
+	{
+		auto pos = item.Parent->GetComponent<Transform>();
+		DrawManager::Instance().RenderRandomImage(*pos);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void EntityTest::CreateEntities()
+{
+	m_Entities.resize(ENTITY_COUNT);
+	m_TestStatistics.Created = (int32_t)m_Entities.size();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void EntityTest::AddRandomComponents()
+{
+	for (auto& entity : m_Entities)
 	{
 		auto transform = entity.GetComponent<Transform>();
 		if (transform)
 		{
 			transform->SetPosition(
 				{
-					Utils::Random<float>(0, 100),
-					Utils::Random<float>(0, 100),
-					Utils::Random<float>(0, 100)
+					Utils::Random<float>(0.0f, 1000.0f),
+					Utils::Random<float>(0.0f, 1000.0f),
+					Utils::Random<float>(0.0f, 1000.0f)
 				});
 			m_TestStatistics.ComponentsChanged++;
 		}
@@ -87,22 +123,22 @@ void EntityTest::AddRandomComponents(std::vector<Entity>& entities)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void EntityTest::RemoveEntities(std::vector<Entity>& entities)
+void EntityTest::RemoveEntities()
 {
-	for (int32_t i = 0; i < entities.size() / 2; i++)
+	for (int32_t i = 0; i < m_Entities.size() / 2; i++)
 	{
 		if (Utils::Probability(20))
 		{
-			entities.pop_back();
+			m_Entities.pop_back();
 			m_TestStatistics.Destroyed++;
 		}
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void EntityTest::RemoveComponents(std::vector<Entity>& entities)
+void EntityTest::RemoveComponents()
 {
-	for (auto& entity : entities)
+	for (auto& entity : m_Entities)
 	{
 		if (Utils::Probability(30))
 		{
@@ -132,9 +168,9 @@ void EntityTest::IterateComponents()
 	{
 		item.SetPosition(
 			{
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100)
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f)
 			});
 		m_TestStatistics.ComponentsChanged++;
 	}
@@ -150,7 +186,7 @@ void EntityTest::IterateComponents()
 	{
 		if (Utils::Probability(30))
 		{
-			item.SetText("Hi");
+			//item.SetText("Hi");
 			m_TestStatistics.ComponentsChanged++;
 		}
 	}

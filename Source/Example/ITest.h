@@ -26,6 +26,9 @@ public:
 	virtual ~ITest() = default;
 
 	virtual void Run(int32_t runs) = 0;
+	virtual void Init() = 0;
+	virtual void Update() = 0;
+	virtual void Render() const = 0;
 
 protected:
 	TestStatistics m_TestStatistics;

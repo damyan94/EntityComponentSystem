@@ -11,6 +11,8 @@
 DrawManager::DrawManager()
 	: m_Window(nullptr)
 	, m_Renderer(nullptr)
+	, m_DrawCalls(0)
+	, m_Headless(true)
 {
 	//AssertIf(!Init());
 }
@@ -29,8 +31,10 @@ DrawManager& DrawManager::Instance()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-bool DrawManager::Init()
+bool DrawManager::Init(bool headless)
 {
+	m_Headless = headless;
+
 	AssertReturnIf(EXIT_SUCCESS != SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_AUDIO)
 		&& SDL_GetError(), false);
 
@@ -47,6 +51,7 @@ bool DrawManager::Init()
 	AssertReturnIf(!m_Window, false);
 
 	m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED);
+	//m_Renderer = SDL_CreateRenderer(m_Window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 	AssertReturnIf(!m_Renderer, false);
 
 	LoadResources();
@@ -79,14 +84,19 @@ void DrawManager::Update()
 ////////////////////////////////////////////////////////////////////////////////
 void DrawManager::ClearScreen()
 {
-	SDL_RenderClear(m_Renderer);
+	m_DrawCalls = 0;
+	
+	if (!m_Headless)
+	{
+		SDL_RenderClear(m_Renderer);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void DrawManager::RenderRandomImage(const Transform& transform)
 {
-	static const Rectangle src{ 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT };
-	static const Rectangle dst{ transform.GetPosition().X, transform.GetPosition().Y, IMAGE_WIDTH, IMAGE_HEIGHT };
+	const Rectangle src{ 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT };
+	const Rectangle dst{ (int)transform.GetPosition().X, (int)transform.GetPosition().Y, IMAGE_WIDTH, IMAGE_HEIGHT };
 
 	DrawManager::Instance().Render(DrawCommand(Utils::Random<size_t>(0, IMAGES_COUNT - 1), src, dst));
 }
@@ -98,13 +108,22 @@ void DrawManager::Render(const DrawCommand& drawCmd)
 	SDL_Rect srcRect{ drawCmd.SourceRectangle.x, drawCmd.SourceRectangle.y, drawCmd.SourceRectangle.w, drawCmd.SourceRectangle.h };
 	SDL_Rect dstRect{ drawCmd.DestinationRectangle.x, drawCmd.DestinationRectangle.y, drawCmd.DestinationRectangle.w, drawCmd.DestinationRectangle.h };
 
-	SDL_RenderCopyEx(m_Renderer, texture, &srcRect, &dstRect, 0, nullptr, SDL_FLIP_NONE);
+	if (!m_Headless)
+	{
+		SDL_RenderCopyEx(m_Renderer, texture, &srcRect, &dstRect, 0, nullptr, SDL_FLIP_NONE);
+	}
+
+	m_DrawCalls++;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 void DrawManager::FinishFrame()
 {
-	SDL_RenderPresent(m_Renderer);
+	if (!m_Headless)
+	{
+		SDL_RenderPresent(m_Renderer);
+	}
+	//Logger::Log(Format("Draw calls: {0}.", m_DrawCalls));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

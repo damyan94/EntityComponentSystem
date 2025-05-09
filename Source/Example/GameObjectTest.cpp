@@ -8,10 +8,16 @@
 #include "Components/Text.h"
 #include "Components/Action.h"
 
+#include "Example/DrawManager.h"
+
+#define MOTHER_OBJECTS_COUNT 55
+#define CHILDREN_COUNT 100
+#define TOTAL_OBJECTS MOTHER_OBJECTS_COUNT * CHILDREN_COUNT
+
 ////////////////////////////////////////////////////////////////////////////////
 void GameObjectTest::Run(int32_t runs)
 {
-	Logger::Log("Running GameObjectTest ...");
+	//Logger::Log("Running GameObjectTest ...");
 
 	Time clock;
 	m_AverageTestStatistics.Reset();
@@ -21,11 +27,10 @@ void GameObjectTest::Run(int32_t runs)
 		m_TestStatistics.Reset();
 		auto start = clock.GetNow();
 
-		GameObject scene;
-		CreateGameObjects(scene);
-		AddRandomComponents(scene);
-		RemoveGameObjects(scene);
-		RemoveComponents(scene);
+		CreateGameObjects();
+		AddRandomComponents();
+		RemoveGameObjects();
+		RemoveComponents();
 		IterateComponents();
 
 		auto finish = clock.GetNow();
@@ -33,28 +38,61 @@ void GameObjectTest::Run(int32_t runs)
 		m_TestStatistics.Duration = (finish - start).GetAs(EUnitOfTime::Microsecond);
 		m_AverageTestStatistics += m_TestStatistics;
 
-		m_TestStatistics.Display();
+		//m_TestStatistics.Display();
 	}
 
-	Logger::Log("Finished running GameObjectTest. Averages:", ETextColor::Green);
+	//Logger::Log("Finished running GameObjectTest. Averages:", ETextColor::Green);
 
 	m_AverageTestStatistics /= runs;
-	m_AverageTestStatistics.Display(ETextColor::Green);
+	//m_AverageTestStatistics.Display(ETextColor::Green);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void GameObjectTest::CreateGameObjects(GameObject& scene)
+void GameObjectTest::Init()
 {
-	for (int32_t i = 0; i < 500; i++)
+	CreateGameObjects();
+	AddRandomComponents();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void GameObjectTest::Update()
+{
+	//RemoveGameObjects();
+	//RemoveComponents();
+	IterateComponents();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void GameObjectTest::Render() const
+{
+	auto& images = ComponentDataManager::Instance().GetAllComponents<Image>();
+	for (const auto& item : images)
 	{
-		scene.AddChild(new GameObject);
+		auto pos = item.Parent->GetComponent<Transform>();
+		DrawManager::Instance().RenderRandomImage(*pos);
+	}
+
+	auto& texts = ComponentDataManager::Instance().GetAllComponents<Text>();
+	for (const auto& item : texts)
+	{
+		auto pos = item.Parent->GetComponent<Transform>();
+		DrawManager::Instance().RenderRandomImage(*pos);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+void GameObjectTest::CreateGameObjects()
+{
+	for (int32_t i = 0; i < MOTHER_OBJECTS_COUNT; i++)
+	{
+		m_Scene.AddChild(new GameObject);
 		m_TestStatistics.Created++;
 	}
 
-	for (auto gameObject : scene.GetAllChildren())
+	for (auto gameObject : m_Scene.GetAllChildren())
 	{
 		GameObjectVector children;
-		children.resize(100);
+		children.resize(CHILDREN_COUNT);
 		for (int32_t i = 0; i < children.size(); i++)
 		{
 			children[i] = new GameObject;
@@ -66,9 +104,9 @@ void GameObjectTest::CreateGameObjects(GameObject& scene)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void GameObjectTest::AddRandomComponents(GameObject& scene)
+void GameObjectTest::AddRandomComponents()
 {
-	for (auto object : scene.GetAllChildren())
+	for (auto object : m_Scene.GetAllChildren())
 	{
 		for (auto child : object->GetAllChildren())
 		{
@@ -77,9 +115,9 @@ void GameObjectTest::AddRandomComponents(GameObject& scene)
 			{
 				transform->SetPosition(
 					{
-						Utils::Random<float>(0, 100),
-						Utils::Random<float>(0, 100),
-						Utils::Random<float>(0, 100)
+						Utils::Random<float>(0.0f, 1000.0f),
+						Utils::Random<float>(0.0f, 1000.0f),
+						Utils::Random<float>(0.0f, 1000.0f)
 					});
 				m_TestStatistics.ComponentsChanged++;
 			}
@@ -106,23 +144,23 @@ void GameObjectTest::AddRandomComponents(GameObject& scene)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void GameObjectTest::RemoveGameObjects(GameObject& scene)
+void GameObjectTest::RemoveGameObjects()
 {
-	for (int32_t i = 0; i < scene.GetAllChildren().size(); i++)
+	for (int32_t i = 0; i < m_Scene.GetAllChildren().size(); i++)
 	{
 		if (Utils::Probability(10))
 		{
 			m_TestStatistics.Destroyed++;
-			m_TestStatistics.Destroyed += (int32_t)scene.GetChild(i)->GetAllChildren().size();
-			scene.RemoveChild(i);
+			m_TestStatistics.Destroyed += (int32_t)m_Scene.GetChild(i)->GetAllChildren().size();
+			m_Scene.RemoveChild(i);
 		}
 	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-void GameObjectTest::RemoveComponents(GameObject& scene)
+void GameObjectTest::RemoveComponents()
 {
-	for (auto object : scene.GetAllChildren())
+	for (auto object : m_Scene.GetAllChildren())
 	{
 		for (auto child : object->GetAllChildren())
 		{
@@ -155,9 +193,9 @@ void GameObjectTest::IterateComponents()
 	{
 		item.SetPosition(
 			{
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100),
-				Utils::Random<float>(0, 100)
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f)
 			});
 		m_TestStatistics.ComponentsChanged++;
 	}
@@ -173,7 +211,7 @@ void GameObjectTest::IterateComponents()
 	{
 		if (Utils::Probability(30))
 		{
-			item.SetText("Hi");
+			//item.SetText("Hi");
 			m_TestStatistics.ComponentsChanged++;
 		}
 	}

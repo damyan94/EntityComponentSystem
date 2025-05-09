@@ -9,11 +9,16 @@ class GameObjectTest
 {
 public:
 	void Run(int32_t runs) final;
+	void Init() final;
+	void Update() final;
+	void Render() const final;
 
 private:
-	void CreateGameObjects(GameObject& scene);
-	void AddRandomComponents(GameObject& scene);
-	void RemoveGameObjects(GameObject& scene);
-	void RemoveComponents(GameObject& scene);
+	void CreateGameObjects();
+	void AddRandomComponents();
+	void RemoveGameObjects();
+	void RemoveComponents();
 	void IterateComponents();
+
+	GameObject m_Scene;
 };

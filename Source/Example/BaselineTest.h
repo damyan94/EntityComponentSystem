@@ -16,6 +16,9 @@ class BaselineTest
 {
 public:
 	void Run(int32_t runs) final;
+	void Init() final;
+	void Update() final;
+	void Render() const final;
 
 private:
 	void CreateEntities();
@@ -23,8 +26,6 @@ private:
 	void RemoveEntities();
 	void RemoveComponents();
 	void IterateComponents();
-
-	void Render() const;
 
 private:
 	////////////////////////////////////////////////////////////////////////////////
