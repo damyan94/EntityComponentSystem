@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include <iostream>
 #include <format>
+#include <algorithm>
 #include <typeindex>
 #include <thread>
 

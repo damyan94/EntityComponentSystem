@@ -10,7 +10,7 @@
 
 #include "Example/DrawManager.h"
 
-#define ENTITY_COUNT 500
+#define ENTITY_COUNT 5000
 
 ////////////////////////////////////////////////////////////////////////////////
 void EntityTest::Run(int32_t runs)

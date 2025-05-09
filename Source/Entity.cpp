@@ -10,6 +10,11 @@ static constexpr uint64_t GetComponentMask(EComponentType type)
     return 1ull << (int64_t)type;
 }
 
+static bool pred(const std::pair<EComponentType, ComponentId>& pair, EComponentType value)
+{
+    return pair.first < value;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 Entity::Entity()
     : m_ComponentMask(0)
@@ -26,12 +31,11 @@ Entity::~Entity()
 ////////////////////////////////////////////////////////////////////////////////
 IComponent* Entity::AddComponent(EComponentType type)
 {
-    //ReturnIf(HasComponent(type), nullptr);
-    if (m_ComponentMask & GetComponentMask(type))
-        return nullptr;
+    ReturnIf(HasComponent(type), nullptr);
 
 #ifdef USE_VECTOR_MAP
     m_Components.emplace_back(type, ComponentDataManagerEntityProxy::Add(type, this));
+    std::sort(m_Components.begin(), m_Components.end());
 
 #else
     m_Components[type] = ComponentDataManagerEntityProxy::Add(type, this);
@@ -47,9 +51,7 @@ IComponent* Entity::AddComponent(EComponentType type)
 void Entity::RemoveComponent(EComponentType type)
 {
     AssertReturnIf(EComponentType::Transform == type);
-    //ReturnIf(!HasComponent(type));
-    if (!(m_ComponentMask & GetComponentMask(type)))
-        return;
+    ReturnIf(!HasComponent(type));
 
     const auto id = GetComponentId(type);
     ComponentDataManagerEntityProxy::Remove(type, id);
@@ -66,9 +68,7 @@ void Entity::RemoveComponent(EComponentType type)
 ////////////////////////////////////////////////////////////////////////////////
 void Entity::ResetComponent(EComponentType type)
 {
-    //ReturnIf(!HasComponent(type));
-    if (!(m_ComponentMask & GetComponentMask(type)))
-        return;
+    ReturnIf(!HasComponent(type));
 
     ComponentDataManagerEntityProxy::Reset(type, GetComponentId(type));
 }
@@ -77,9 +77,7 @@ void Entity::ResetComponent(EComponentType type)
 // @brief Do not store permanently because if the vector resizes, it may be invalid
 IComponent* Entity::GetComponent(EComponentType type) const
 {
-    //ReturnIf(!HasComponent(type), nullptr);
-    if (!(m_ComponentMask & GetComponentMask(type)))
-        return nullptr;
+    ReturnIf(!HasComponent(type), nullptr);
 
     return ComponentDataManagerEntityProxy::Get(type, GetComponentId(type));
 }
@@ -87,25 +85,37 @@ IComponent* Entity::GetComponent(EComponentType type) const
 ////////////////////////////////////////////////////////////////////////////////
 bool Entity::HasComponent(EComponentType type) const
 {
-#ifdef USE_VECTOR_MAP
-    for (const auto& [componentType, _] : m_Components)
-    {
-        ReturnIf(componentType == type, true);
-    }
+    //TODO if we would have more than 64 components in total, we could sort the vectormap
+    //and then search more efficiently using the binary search functions of STL
+    const auto it = std::lower_bound(m_Components.begin(), m_Components.end(), type, pred);
 
-    return false;
-
-#else
-    //return m_Components.contains(type);
+    return it != m_Components.end();
+    //return std::binary_search(m_Components.begin(), m_Components.end(), type, pred);
     return m_ComponentMask & GetComponentMask(type);
 
-#endif
+//#ifdef USE_VECTOR_MAP
+//    for (const auto& [componentType, _] : m_Components)
+//    {
+//        ReturnIf(componentType == type, true);
+//    }
+//
+//    return false;
+//
+//#else
+//    //return m_Components.contains(type);
+//    return m_ComponentMask & GetComponentMask(type);
+//
+//#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 ComponentId Entity::GetComponentId(EComponentType type) const
 {
 #ifdef USE_VECTOR_MAP
+    const auto it = std::lower_bound(m_Components.begin(), m_Components.end(), type, pred);
+
+    ReturnIf(it != m_Components.end(), it->second);
+
     for (const auto& [componentType, id] : m_Components)
     {
         ReturnIf(componentType == type, id);
