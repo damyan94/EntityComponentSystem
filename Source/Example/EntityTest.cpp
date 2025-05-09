@@ -10,7 +10,7 @@
 
 #include "Example/DrawManager.h"
 
-#define ENTITY_COUNT 5000
+#define ENTITY_COUNT 500
 
 ////////////////////////////////////////////////////////////////////////////////
 void EntityTest::Run(int32_t runs)
@@ -102,16 +102,18 @@ void EntityTest::AddRandomComponents()
 			m_TestStatistics.ComponentsChanged++;
 		}
 
-		if (Utils::Probability(30))
+		if (m_ImagesAdded < ENTITY_COUNT / 2 && Utils::Probability(70))
 		{
 			entity.AddComponent<Image>();
 			m_TestStatistics.ComponentsAdded++;
+			m_ImagesAdded++;
 		}
 
-		if (Utils::Probability(50))
+		if (m_TextsAdded < ENTITY_COUNT / 2 && Utils::Probability(70))
 		{
 			entity.AddComponent<Text>();
 			m_TestStatistics.ComponentsAdded++;
+			m_TextsAdded++;
 		}
 
 		if (Utils::Probability(20))

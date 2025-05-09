@@ -21,4 +21,7 @@ private:
 	void IterateComponents();
 
 	GameObject m_Scene;
+
+	size_t m_ImagesAdded = 0;
+	size_t m_TextsAdded = 0;
 };

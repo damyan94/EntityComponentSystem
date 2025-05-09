@@ -18,7 +18,7 @@ public:
 
 	uint64_t			GenerateUInt64(uint64_t min, uint64_t max);
 	int64_t				GenerateInt64(int64_t min, int64_t max);
-	double				GenerateDouble(double min, double max);
+	double				GenerateDouble(double min, double max, size_t precision = 10);
 
 	template <typename T>
 	T Generate()
@@ -30,7 +30,7 @@ public:
 	T Generate(T min, T max)
 	{
 		ReturnIf(max - min == 0, 0);
-		return min + Lehmer64() % (max - min);
+		return min + Lehmer64() % (max + 1 - min);
 	}
 
 private:
@@ -45,11 +45,7 @@ private:
 template<>
 inline float RandomNumberGenerator::Generate(float min, float max)
 {
-	ReturnIf((max - min) == 0, 0);
-	double fraction = (double)GenerateUInt64(1000000000000000, 9999999999999999)
-		/ 10000000000000000;
-
-	return min + fraction * (max - min);
+	return GenerateDouble(min, max);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

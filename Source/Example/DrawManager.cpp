@@ -127,6 +127,12 @@ void DrawManager::FinishFrame()
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+size_t DrawManager::GetDrawCalls() const
+{
+	return m_DrawCalls;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 SDL_Surface* DrawManager::CreateSurfaceFromFile(const std::string& filename)
 {
 	SDL_Surface* result = nullptr;

@@ -10,7 +10,7 @@
 
 #include "Systems/RenderSystem.h"
 
-#define MOTHER_OBJECTS_COUNT 55
+#define MOTHER_OBJECTS_COUNT 5
 #define CHILDREN_COUNT 100
 #define TOTAL_OBJECTS MOTHER_OBJECTS_COUNT * CHILDREN_COUNT
 
@@ -161,16 +161,18 @@ void SystemTest::AddRandomComponents()
 				m_TestStatistics.ComponentsChanged++;
 			}
 
-			if (Utils::Probability(30))
+			if (m_ImagesAdded < TOTAL_OBJECTS / 2 && Utils::Probability(70))
 			{
 				child->AddComponent<Image>();
 				m_TestStatistics.ComponentsAdded++;
+				m_ImagesAdded++;
 			}
 
-			if (Utils::Probability(50))
+			if (m_TextsAdded < TOTAL_OBJECTS / 2 && Utils::Probability(70))
 			{
 				child->AddComponent<Text>();
 				m_TestStatistics.ComponentsAdded++;
+				m_TextsAdded++;
 			}
 
 			if (Utils::Probability(20))
@@ -230,7 +232,12 @@ void SystemTest::IterateComponents()
 	auto& transforms = ComponentDataManager::Instance().GetAllComponents<Transform>();
 	for (auto& item : transforms)
 	{
-		item.SetPosition({ 1, 1, 1 });
+		item.SetPosition(
+			{
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f),
+				Utils::Random<float>(0.0f, 1000.0f)
+			});
 		m_TestStatistics.ComponentsChanged++;
 	}
 

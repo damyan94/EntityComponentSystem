@@ -21,4 +21,7 @@ private:
 	void IterateComponents();
 
 	std::vector<Entity> m_Entities;
+
+	size_t m_ImagesAdded = 0;
+	size_t m_TextsAdded = 0;
 };

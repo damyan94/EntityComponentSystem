@@ -55,6 +55,8 @@ public:
 	void Render(const DrawCommand& drawCmd);
 	void FinishFrame();
 
+	size_t GetDrawCalls() const;
+
 private:
 	SDL_Surface* CreateSurfaceFromFile(const std::string& filename);
 	SDL_Texture* CreateTextureFromSurface(SDL_Surface* surface);

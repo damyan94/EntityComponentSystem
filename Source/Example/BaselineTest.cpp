@@ -10,9 +10,9 @@
 
 #include "Example/DrawManager.h"
 
-#define UI_COUNT 2500
-#define TILE_COUNT 1500
-#define UNIT_COUNT 1000
+#define UI_COUNT 250
+#define TILE_COUNT 150
+#define UNIT_COUNT 100
 #define TOTAL_COUNT UI_COUNT + TILE_COUNT + UNIT_COUNT
 
 ////////////////////////////////////////////////////////////////////////////////

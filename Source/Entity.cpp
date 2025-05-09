@@ -5,16 +5,9 @@
 #include "ComponentDataManagerEntityProxy.h"
 #include "Components/Transform.h"
 
-uint64_t GetComponentMask(EComponentType type)
+static constexpr uint64_t GetComponentMask(EComponentType type)
 {
-    uint64_t result = 1;
-
-    for (int32_t i = 0; i < (int32_t)type; i++)
-    {
-        result <<= 1;
-    }
-
-    return result;
+    return 1ull << (int64_t)type;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -45,7 +38,7 @@ IComponent* Entity::AddComponent(EComponentType type)
 
 #endif
 
-    m_ComponentMask |= (uint64_t)type;
+    m_ComponentMask |= ((uint64_t)type + 1);
 
     return GetComponent(type);
 }

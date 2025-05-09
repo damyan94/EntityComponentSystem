@@ -12,6 +12,9 @@
 int32_t main(int32_t argC, char** argV)
 {
 	srand((uint32_t)time(nullptr));
+	std::locale::global(std::locale("en_US.UTF-8"));
+	std::cout.imbue(std::locale());
+	std::cerr.imbue(std::locale());
 	
 	Logger::SetLogLevel(ELogLevel::LogError);
 
@@ -45,6 +48,7 @@ int32_t main(int32_t argC, char** argV)
 	TimePoint totalUpdate = 0;
 	TimePoint totalRender = 0;
 	TimePoint totalTotal = 0;
+	size_t totalDrawCalls = 0;
 
 	while (i <= 1000)
 	{
@@ -55,34 +59,35 @@ int32_t main(int32_t argC, char** argV)
 		//test->Run(1);
 
 		test->Update();
-		//const auto update = start.GetElapsedTimeUntilNow(EUnitOfTime::Millisecond);
-		const auto update = start.GetElapsedTimeUntilNow(EUnitOfTime::Millisecond);
+		const auto update = start.GetElapsedTimeUntilNow(EUnitOfTime::Microsecond);
 		totalUpdate += update;
 
 		test->Render();
 		DrawManager::Instance().FinishFrame();
-		const auto render = start.GetElapsedTimeUntilNow(EUnitOfTime::Millisecond);
+		const auto render = start.GetElapsedTimeUntilNow(EUnitOfTime::Microsecond);
 		totalRender += render;
 
 		const auto total = update + render;
 		totalTotal += total;
-		const auto sleep = 1000 / TARGET_FPS - total;
+		const auto sleep = 1000000 / TARGET_FPS - total;
+
+		totalDrawCalls += DrawManager::Instance().GetDrawCalls();
 
 		//Logger::Log(Format("Update: {0} ms, Render: {1} ms.", update, render), ETextColor::Cyan);
 
 		//const auto fps = 1000 / (total);
-		const auto fps = 1000 / (total + sleep);
+		const auto fps = 1000000 / (total + sleep);
 		sumfps += fps;
 		i++;
 
 		//Logger::Log(Format("{0} FPS.", fps), ETextColor::Cyan);
 		//Logger::Log(Format("Average FPS: {0}.", sumfps / i), ETextColor::Cyan);
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
+		std::this_thread::sleep_for(std::chrono::microseconds(sleep));
 	}
 
-	Logger::Log(Format("Update: {0} ms, Render: {1} ms.", totalUpdate / i, totalRender / i), ETextColor::Cyan);
-	Logger::Log(Format("Average FPS: {0}.", sumfps / i), ETextColor::Cyan);
+	Logger::Log(Format("Update: {:L} us, Render: {:L} us.", totalUpdate / i, totalRender / i), ETextColor::Cyan);
+	Logger::Log(Format("Average FPS: {:L}, Average draw calls: {:L}.", sumfps / i, totalDrawCalls / i), ETextColor::Cyan);
 
 	return EXIT_SUCCESS;
 }

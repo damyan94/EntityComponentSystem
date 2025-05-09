@@ -10,7 +10,7 @@
 
 #include "Example/DrawManager.h"
 
-#define MOTHER_OBJECTS_COUNT 55
+#define MOTHER_OBJECTS_COUNT 5
 #define CHILDREN_COUNT 100
 #define TOTAL_OBJECTS MOTHER_OBJECTS_COUNT * CHILDREN_COUNT
 
@@ -122,16 +122,18 @@ void GameObjectTest::AddRandomComponents()
 				m_TestStatistics.ComponentsChanged++;
 			}
 
-			if (Utils::Probability(30))
+			if (m_ImagesAdded < TOTAL_OBJECTS / 2 && Utils::Probability(70))
 			{
 				child->AddComponent<Image>();
 				m_TestStatistics.ComponentsAdded++;
+				m_ImagesAdded++;
 			}
 
-			if (Utils::Probability(50))
+			if (m_TextsAdded < TOTAL_OBJECTS / 2 && Utils::Probability(70))
 			{
 				child->AddComponent<Text>();
 				m_TestStatistics.ComponentsAdded++;
+				m_TextsAdded++;
 			}
 
 			if (Utils::Probability(20))
